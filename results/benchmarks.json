@@ -1,0 +1,29 @@
+[
+  {
+    "name": "F3B",
+    "type": "RNA (2'-F pyrimidines; F3Bomf variant 2'-OMe purines)",
+    "affinity_nM": 20.0,
+    "function": "binder/imaging (inhibition NOT established)",
+    "fold": {
+      "length": 36,
+      "mfe": -7.5,
+      "structure": "(((...((.((((..(....)..)))).))...)))",
+      "gc_fraction": 0.722,
+      "ens_freq_mfe": 0.4277
+    }
+  },
+  {
+    "name": "A3",
+    "type": "ssDNA",
+    "affinity_nM": 13.4,
+    "function": "ACTIVATOR (potentiates catalysis) \u2014 a cautionary benchmark, not a goal",
+    "fold": "sequence not publicly available"
+  },
+  {
+    "name": "LVMH_G4_series",
+    "type": "ssDNA G-quadruplex",
+    "affinity_nM": null,
+    "function": "INHIBITOR (gelatinase inhibition claimed) \u2014 closest prior art to our goal",
+    "fold": "sequence not publicly available"
+  }
+]
