@@ -3,8 +3,8 @@
   "oracle": "proxy",
   "note": "CPU StructureProxyOracle: structural-fitness prior, not a binding predictor. Swap in Boltz2Oracle on a GPU workstation for binding-driven ranking.",
   "config": {
-    "rounds": 6,
-    "pop_size": 40,
+    "rounds": 12,
+    "pop_size": 60,
     "elite_frac": 0.25,
     "fresh_frac": 0.15,
     "mutation_rate": 0.06,
@@ -17,28 +17,28 @@
   },
   "comparison": {
     "oracle": "proxy",
-    "oracle_calls": 239,
+    "oracle_calls": 715,
     "closed_loop": {
-      "top_k": 15,
-      "best": 0.964,
-      "mean_top_k": 0.9197
+      "top_k": 20,
+      "best": 0.968,
+      "mean_top_k": 0.9309
     },
     "aidta_reward_selection": {
-      "top_k": 15,
-      "best": 0.8982,
-      "mean_top_k": 0.753
+      "top_k": 20,
+      "best": 0.9426,
+      "mean_top_k": 0.7885
     },
     "random_assembly": {
-      "top_k": 15,
-      "best": 0.9619,
-      "mean_top_k": 0.9407
+      "top_k": 20,
+      "best": 0.9658,
+      "mean_top_k": 0.949
     },
     "sample_efficiency": {
       "closed_loop_calls_to": {
         "0.9": 16,
         "0.93": 16,
         "0.95": 29,
-        "0.96": 231
+        "0.96": 280
       },
       "random_calls_to": {
         "0.9": 5,
@@ -66,27 +66,132 @@
   "shortlist": [
     {
       "rank": 1,
-      "sequence": "TACCGAACGCGAACTGACGCGTTCGGGCGCGCTT",
-      "length": 34,
-      "oracle_value": 0.964,
+      "sequence": "ATCGCAACGCGCGCGTTGCGTT",
+      "length": 22,
+      "oracle_value": 0.968,
       "penalty": 0.0,
-      "fitness": 0.964,
-      "origin": "crossover+mut",
-      "aidta_similarity_of_fold": 0.529,
+      "fitness": 0.968,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.636,
       "oracle_details": {
-        "decisive": 0.897,
+        "decisive": 0.908,
         "stable": 1.0,
         "structured": 1.0,
         "gc": 1.0,
-        "mfe": -12.100000381469727,
-        "paired_fraction": 0.529,
-        "gc_fraction": 0.647,
-        "ens_freq_mfe": 0.897,
-        "mfe_structure": "..(((((((((......)))))))))........"
+        "mfe": -8.0,
+        "paired_fraction": 0.636,
+        "gc_fraction": 0.636,
+        "ens_freq_mfe": 0.908,
+        "mfe_structure": "..(((((((....))))))).."
       }
     },
     {
       "rank": 2,
+      "sequence": "AACGTGAACCGAACGCAACGGCGTTCGGTT",
+      "length": 30,
+      "oracle_value": 0.9621,
+      "penalty": 0.0,
+      "fitness": 0.9621,
+      "origin": "assembly:fresh",
+      "aidta_similarity_of_fold": 0.667,
+      "oracle_details": {
+        "decisive": 0.892,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -12.600000381469727,
+        "paired_fraction": 0.667,
+        "gc_fraction": 0.567,
+        "ens_freq_mfe": 0.892,
+        "mfe_structure": "......((((((((((....))))))))))"
+      }
+    },
+    {
+      "rank": 3,
+      "sequence": "AAGCCAACGCGAACCACCGCGTTGGCTAAACC",
+      "length": 32,
+      "oracle_value": 0.9613,
+      "penalty": 0.0,
+      "fitness": 0.9613,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.625,
+      "oracle_details": {
+        "decisive": 0.889,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -12.899999618530273,
+        "paired_fraction": 0.625,
+        "gc_fraction": 0.594,
+        "ens_freq_mfe": 0.889,
+        "mfe_structure": ".((((((((((......))))))))))....."
+      }
+    },
+    {
+      "rank": 4,
+      "sequence": "ATGCGAACGCCGGCGTTCGCTT",
+      "length": 22,
+      "oracle_value": 0.9562,
+      "penalty": 0.0,
+      "fitness": 0.9562,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.636,
+      "oracle_details": {
+        "decisive": 0.875,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -7.800000190734863,
+        "paired_fraction": 0.636,
+        "gc_fraction": 0.636,
+        "ens_freq_mfe": 0.875,
+        "mfe_structure": "..(((((((....))))))).."
+      }
+    },
+    {
+      "rank": 5,
+      "sequence": "AACTCGAAGCGCAACGGCCGTTGCGCTT",
+      "length": 28,
+      "oracle_value": 0.955,
+      "penalty": 0.0,
+      "fitness": 0.955,
+      "origin": "assembly:fresh",
+      "aidta_similarity_of_fold": 0.643,
+      "oracle_details": {
+        "decisive": 0.871,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -10.0,
+        "paired_fraction": 0.643,
+        "gc_fraction": 0.607,
+        "ens_freq_mfe": 0.871,
+        "mfe_structure": "......(((((((((....)))))))))"
+      }
+    },
+    {
+      "rank": 6,
+      "sequence": "AACTGGAACGGAACGCCAACGGCGCCGTTGGCGTTCCGTT",
+      "length": 40,
+      "oracle_value": 0.9537,
+      "penalty": 0.0,
+      "fitness": 0.9537,
+      "origin": "assembly:fresh",
+      "aidta_similarity_of_fold": 0.75,
+      "oracle_details": {
+        "decisive": 0.868,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -19.600000381469727,
+        "paired_fraction": 0.75,
+        "gc_fraction": 0.625,
+        "ens_freq_mfe": 0.868,
+        "mfe_structure": "......(((((((((((((((....)))))))))))))))"
+      }
+    },
+    {
+      "rank": 7,
       "sequence": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
       "length": 34,
       "oracle_value": 0.9507,
@@ -107,7 +212,49 @@
       }
     },
     {
-      "rank": 3,
+      "rank": 8,
+      "sequence": "AAGCAAGCGAAGCGCCGCTTGCAGGG",
+      "length": 26,
+      "oracle_value": 0.945,
+      "penalty": 0.0,
+      "fitness": 0.945,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.538,
+      "oracle_details": {
+        "decisive": 0.937,
+        "stable": 0.868,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -7.900000095367432,
+        "paired_fraction": 0.538,
+        "gc_fraction": 0.654,
+        "ens_freq_mfe": 0.937,
+        "mfe_structure": "..(((((((......)))))))...."
+      }
+    },
+    {
+      "rank": 9,
+      "sequence": "AACCGCAACGCGCGCGTTGCGGTTAACGAG",
+      "length": 30,
+      "oracle_value": 0.9412,
+      "penalty": 0.0,
+      "fitness": 0.9412,
+      "origin": "assembly:fresh",
+      "aidta_similarity_of_fold": 0.667,
+      "oracle_details": {
+        "decisive": 0.832,
+        "stable": 1.0,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -11.5,
+        "paired_fraction": 0.667,
+        "gc_fraction": 0.633,
+        "ens_freq_mfe": 0.832,
+        "mfe_structure": "((((((((((....))))))))))......"
+      }
+    },
+    {
+      "rank": 10,
       "sequence": "AACCAAGCGAAGGCAACTGCGCCTTCGCTT",
       "length": 30,
       "oracle_value": 0.9388,
@@ -128,49 +275,70 @@
       }
     },
     {
-      "rank": 4,
-      "sequence": "AACGCAAAGCCGAAGCCAAGGCGCCTTGGCTTCGGCTT",
-      "length": 38,
-      "oracle_value": 0.9369,
+      "rank": 11,
+      "sequence": "AACAGCAAGCGCAAGCGGAACGGACCGCTTGCGCTT",
+      "length": 36,
+      "oracle_value": 0.9381,
       "penalty": 0.0,
-      "fitness": 0.9369,
+      "fitness": 0.9381,
       "origin": "assembly:fresh",
-      "aidta_similarity_of_fold": 0.737,
+      "aidta_similarity_of_fold": 0.667,
       "oracle_details": {
-        "decisive": 0.82,
+        "decisive": 0.823,
         "stable": 1.0,
         "structured": 1.0,
         "gc": 1.0,
-        "mfe": -17.0,
-        "paired_fraction": 0.737,
-        "gc_fraction": 0.605,
-        "ens_freq_mfe": 0.82,
-        "mfe_structure": "......((((((((((((((....))))))))))))))"
+        "mfe": -15.899999618530273,
+        "paired_fraction": 0.667,
+        "gc_fraction": 0.611,
+        "ens_freq_mfe": 0.823,
+        "mfe_structure": "......((((((((((((......))))))))))))"
       }
     },
     {
-      "rank": 5,
-      "sequence": "AACGCTAACGGAAGGCAACAACGCCTTCCGTT",
-      "length": 32,
-      "oracle_value": 0.9346,
+      "rank": 12,
+      "sequence": "AACTGCAACGCCAACCGCGCGGTTGGCGTT",
+      "length": 30,
+      "oracle_value": 0.9378,
       "penalty": 0.0,
-      "fitness": 0.9346,
-      "origin": "mutate",
-      "aidta_similarity_of_fold": 0.625,
+      "fitness": 0.9378,
+      "origin": "assembly:fresh",
+      "aidta_similarity_of_fold": 0.667,
       "oracle_details": {
-        "decisive": 0.832,
-        "stable": 0.973,
+        "decisive": 0.822,
+        "stable": 1.0,
         "structured": 1.0,
         "gc": 1.0,
-        "mfe": -10.899999618530273,
-        "paired_fraction": 0.625,
-        "gc_fraction": 0.531,
-        "ens_freq_mfe": 0.832,
-        "mfe_structure": "......((((((((((......))))))))))"
+        "mfe": -11.100000381469727,
+        "paired_fraction": 0.667,
+        "gc_fraction": 0.633,
+        "ens_freq_mfe": 0.822,
+        "mfe_structure": "......((((((((((....))))))))))"
       }
     },
     {
-      "rank": 6,
+      "rank": 13,
+      "sequence": "TACCGAACGCGAACTGGCGCGATCGGTTT",
+      "length": 29,
+      "oracle_value": 0.935,
+      "penalty": 0.0,
+      "fitness": 0.935,
+      "origin": "crossover+mut",
+      "aidta_similarity_of_fold": 0.621,
+      "oracle_details": {
+        "decisive": 0.867,
+        "stable": 0.926,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -9.399999618530273,
+        "paired_fraction": 0.621,
+        "gc_fraction": 0.586,
+        "ens_freq_mfe": 0.867,
+        "mfe_structure": ".(((((.((((......)))).))))).."
+      }
+    },
+    {
+      "rank": 14,
       "sequence": "AACGCAAGCGAACTCCCGCTTGCGTTAACTCC",
       "length": 32,
       "oracle_value": 0.9339,
@@ -191,49 +359,7 @@
       }
     },
     {
-      "rank": 7,
-      "sequence": "AACGCAAGCGAAGTCCCGCTTGCGTTAACTCC",
-      "length": 32,
-      "oracle_value": 0.9337,
-      "penalty": 0.0,
-      "fitness": 0.9337,
-      "origin": "mutate",
-      "aidta_similarity_of_fold": 0.625,
-      "oracle_details": {
-        "decisive": 0.811,
-        "stable": 1.0,
-        "structured": 1.0,
-        "gc": 1.0,
-        "mfe": -11.699999809265137,
-        "paired_fraction": 0.625,
-        "gc_fraction": 0.562,
-        "ens_freq_mfe": 0.811,
-        "mfe_structure": "((((((((((......))))))))))......"
-      }
-    },
-    {
-      "rank": 8,
-      "sequence": "AACGACAACGGCAACCGGCCGGTTGCCGTT",
-      "length": 30,
-      "oracle_value": 0.9317,
-      "penalty": 0.0,
-      "fitness": 0.9317,
-      "origin": "assembly:fresh",
-      "aidta_similarity_of_fold": 0.667,
-      "oracle_details": {
-        "decisive": 0.805,
-        "stable": 1.0,
-        "structured": 1.0,
-        "gc": 1.0,
-        "mfe": -11.100000381469727,
-        "paired_fraction": 0.667,
-        "gc_fraction": 0.633,
-        "ens_freq_mfe": 0.805,
-        "mfe_structure": "......((((((((((....))))))))))"
-      }
-    },
-    {
-      "rank": 9,
+      "rank": 15,
       "sequence": "AACGCTAACGGAAGGCAACAGCGCCTTCCGTT",
       "length": 32,
       "oracle_value": 0.9316,
@@ -254,129 +380,108 @@
       }
     },
     {
-      "rank": 10,
-      "sequence": "AAGCCGCGGCTTAACGCGGACGGAAGCGAACGTACGGTTCCGTT",
-      "length": 44,
-      "oracle_value": 0.9231,
+      "rank": 16,
+      "sequence": "AAGCCAACGCGAACCACCGCGTTGGCTTAACC",
+      "length": 32,
+      "oracle_value": 0.9291,
       "penalty": 0.0,
-      "fitness": 0.9231,
-      "origin": "mutate",
-      "aidta_similarity_of_fold": 0.591,
-      "oracle_details": {
-        "decisive": 0.822,
-        "stable": 0.942,
-        "structured": 1.0,
-        "gc": 1.0,
-        "mfe": -14.5,
-        "paired_fraction": 0.591,
-        "gc_fraction": 0.614,
-        "ens_freq_mfe": 0.822,
-        "mfe_structure": "...(((((......)))))((((((.((......)).))))))."
-      }
-    },
-    {
-      "rank": 11,
-      "sequence": "AAGCACAACGCCAAGGCGCCTTGGCGTT",
-      "length": 28,
-      "oracle_value": 0.9107,
-      "penalty": 0.0,
-      "fitness": 0.9107,
-      "origin": "assembly:fresh",
-      "aidta_similarity_of_fold": 0.643,
-      "oracle_details": {
-        "decisive": 0.788,
-        "stable": 0.939,
-        "structured": 1.0,
-        "gc": 1.0,
-        "mfe": -9.199999809265137,
-        "paired_fraction": 0.643,
-        "gc_fraction": 0.607,
-        "ens_freq_mfe": 0.788,
-        "mfe_structure": "......(((((((((....)))))))))"
-      }
-    },
-    {
-      "rank": 12,
-      "sequence": "ACCGGCACCGTTCAGCTGAACTGAACGGGCCATTAACTCC",
-      "length": 40,
-      "oracle_value": 0.9027,
-      "penalty": 0.0,
-      "fitness": 0.9027,
-      "origin": "crossover+mut",
-      "aidta_similarity_of_fold": 0.55,
-      "oracle_details": {
-        "decisive": 0.839,
-        "stable": 0.836,
-        "structured": 1.0,
-        "gc": 1.0,
-        "mfe": -11.699999809265137,
-        "paired_fraction": 0.55,
-        "gc_fraction": 0.575,
-        "ens_freq_mfe": 0.839,
-        "mfe_structure": "...(((.((((((((.....)))))))))))........."
-      }
-    },
-    {
-      "rank": 13,
-      "sequence": "AACCGAACGCGAACTGGCGCGTTCGGTT",
-      "length": 28,
-      "oracle_value": 0.9007,
-      "penalty": 0.0,
-      "fitness": 0.9007,
+      "fitness": 0.9291,
       "origin": "assembly:init",
-      "aidta_similarity_of_fold": 0.786,
+      "aidta_similarity_of_fold": 0.688,
       "oracle_details": {
-        "decisive": 0.793,
+        "decisive": 0.797,
         "stable": 1.0,
-        "structured": 0.911,
+        "structured": 1.0,
         "gc": 1.0,
-        "mfe": -13.300000190734863,
-        "paired_fraction": 0.786,
-        "gc_fraction": 0.607,
-        "ens_freq_mfe": 0.793,
-        "mfe_structure": "(((((((((((......)))))))))))"
+        "mfe": -13.5,
+        "paired_fraction": 0.688,
+        "gc_fraction": 0.594,
+        "ens_freq_mfe": 0.797,
+        "mfe_structure": "(((((((((((......)))))))))))...."
       }
     },
     {
-      "rank": 14,
-      "sequence": "AAGCCAAGGCAAGCGCCTTGGCTT",
-      "length": 24,
-      "oracle_value": 0.8659,
+      "rank": 17,
+      "sequence": "AACGCTAACGGAAGGCAACAGCGCCTTCCGTTCTT",
+      "length": 35,
+      "oracle_value": 0.9075,
       "penalty": 0.0,
-      "fitness": 0.8659,
+      "fitness": 0.9075,
+      "origin": "crossover+mut",
+      "aidta_similarity_of_fold": 0.571,
+      "oracle_details": {
+        "decisive": 0.803,
+        "stable": 0.906,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -11.100000381469727,
+        "paired_fraction": 0.571,
+        "gc_fraction": 0.543,
+        "ens_freq_mfe": 0.803,
+        "mfe_structure": "......((((((((((......))))))))))..."
+      }
+    },
+    {
+      "rank": 18,
+      "sequence": "AACGCAAGCGAAGTCCCGATTGCGTTAACTCC",
+      "length": 32,
+      "oracle_value": 0.8673,
+      "penalty": 0.0,
+      "fitness": 0.8673,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.562,
+      "oracle_details": {
+        "decisive": 0.8,
+        "stable": 0.75,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -8.399999618530273,
+        "paired_fraction": 0.562,
+        "gc_fraction": 0.531,
+        "ens_freq_mfe": 0.8,
+        "mfe_structure": "(((((((.((......)).)))))))......"
+      }
+    },
+    {
+      "rank": 19,
+      "sequence": "AACGGCAAGCCGCGGCTTGCCGTT",
+      "length": 24,
+      "oracle_value": 0.8604,
+      "penalty": 0.0,
+      "fitness": 0.8604,
       "origin": "assembly:fresh",
       "aidta_similarity_of_fold": 0.833,
       "oracle_details": {
-        "decisive": 0.795,
+        "decisive": 0.78,
         "stable": 1.0,
         "structured": 0.792,
         "gc": 1.0,
-        "mfe": -11.5,
+        "mfe": -11.199999809265137,
         "paired_fraction": 0.833,
-        "gc_fraction": 0.583,
-        "ens_freq_mfe": 0.795,
+        "gc_fraction": 0.667,
+        "ens_freq_mfe": 0.78,
         "mfe_structure": "((((((((((....))))))))))"
       }
     },
     {
-      "rank": 15,
-      "sequence": "AAGCCGCGGCTTAACGCGGACGGAAGCTGCCGTT",
-      "length": 34,
-      "oracle_value": 0.8361,
+      "rank": 20,
+      "sequence": "AAACCAACGCGAACCACCGCGTTGGCTTCACC",
+      "length": 32,
+      "oracle_value": 0.8456,
       "penalty": 0.0,
-      "fitness": 0.8361,
-      "origin": "crossover+mut",
-      "aidta_similarity_of_fold": 0.529,
+      "fitness": 0.8456,
+      "origin": "mutate",
+      "aidta_similarity_of_fold": 0.5,
       "oracle_details": {
-        "decisive": 0.73,
-        "stable": 0.723,
+        "decisive": 0.648,
+        "stable": 0.875,
         "structured": 1.0,
         "gc": 1.0,
-        "mfe": -8.600000381469727,
-        "paired_fraction": 0.529,
-        "gc_fraction": 0.647,
-        "ens_freq_mfe": 0.73,
-        "mfe_structure": "...(((((......)))))((((......))))."
+        "mfe": -9.800000190734863,
+        "paired_fraction": 0.5,
+        "gc_fraction": 0.594,
+        "ens_freq_mfe": 0.648,
+        "mfe_structure": "...((((((((......))))))))......."
       }
     }
   ]

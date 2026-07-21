@@ -57,6 +57,12 @@ python3 src/pipeline/closed_loop.py --rounds 12 --pop 60   # writes results/cand
 
 ## What to do NEXT on the workstation (in order)
 
+> **Shortcut:** on the GPU workstation, `bash scripts/run_on_gpu.sh` does steps
+> 1–5 below in one command (verifies the GPU, installs Boltz-2, fetches the MMP9
+> sequence without fabricating it, smoke-tests the oracle, runs the loop →
+> `results/candidates_boltz2.json`). `RECEPTOR_FASTA=P14780.fasta` if UniProt is
+> unreachable. The steps below are the manual/explained version.
+
 1. **Install GPU tools:** `pip install boltz` (downloads weights on first run).
    Optionally AF3 (non-commercial) and OpenMM/AmberTools for Stage 5.
 2. **Get the MMP9 receptor sequence/structure.** On an open-network host:

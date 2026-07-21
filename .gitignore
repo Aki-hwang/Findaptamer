@@ -10,6 +10,8 @@ results/**/*.cif
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+.venv/
+venv/
 # scratch / third-party reference clones
 scratch/
 AiDTA/
