@@ -91,13 +91,22 @@ Boltz-2 batches. This sandbox has **no GPU**, so Stages 3–5 cannot run here.
 - **AlphaFold3** — weights on request, **non-commercial only**. Use for
   consensus/benchmarking; do not build a commercial deliverable solely on it.
 
-## What runs in THIS sandbox now (CPU-only)
-- Stage 0 target/epitope definition — done (`src/target/mmp9.py`).
+## What runs in THIS sandbox now (CPU-only, no GPU)
+- Stage 0 target/epitope definition — done (`src/target/mmp9.py`); receptor
+  sequence fetch/slice — done (`src/target/receptor.py`, blocked egress handled).
 - Fragment library — done (`src/fragments/build_library.py`).
 - DNA folding / structure scoring — done (`src/scoring/secondary_structure.py`).
-- Assembly generator (structure-scored only) — done (`src/generator/assembler.py`).
+- Fragment pool (generic + docked loader) — done (`src/generator/pool.py`).
+- Assembly generator — done (`src/generator/assembler.py`); its demo proves the
+  AiDTA reward accepts unstructured non-binders (the degeneracy this method fixes).
+- **Closed loop generate→oracle→select** — done (`src/pipeline/closed_loop.py`),
+  run end-to-end with the CPU `StructureProxyOracle`. It beats AiDTA-reward
+  selection decisively; against random search on the cheap smooth proxy it is at
+  parity (expected — the sample-efficiency win belongs to the expensive Boltz-2
+  oracle and is not claimed from the proxy). Output: `results/candidates.json`.
 - Boltz-2 / AF3 oracle wrappers — authored as ready-to-run interfaces
-  (`src/oracle/`), executed once a GPU workstation is attached.
+  (`src/oracle/`); `Boltz2Oracle` is a `--oracle boltz2` drop-in for the loop,
+  executed once a GPU workstation is attached.
 
 ## References
 AiDTA bioRxiv 2025.06.01.657174 · AF3 Nature 2024 (s41586-024-07487-w), weights

@@ -20,13 +20,16 @@ affinity model. See `docs/02_improved_method.md`.
 src/
   fragments/build_library.py     # exact 5,440 ss + 5,440 ds DNA fragment library
   scoring/secondary_structure.py # DNA folding + reward (ViennaRNA, DNA params)
-  target/                        # MMP9 receptor & epitope definition
-  generator/                     # aptamer generator (assembly / RL)
-  oracle/                        # in-the-loop structure+affinity oracle
+  target/mmp9.py                 # MMP9 domains, epitopes, benchmarks
+  target/receptor.py             # fetch/slice MMP9 catalytic domain (never fabricates)
+  generator/pool.py              # fragment-pool builder (generic + HDOCK-docked loader)
+  generator/assembler.py         # faithful AiDTA assembly engine (exposes its degeneracy)
+  oracle/interface.py            # Oracle ABC + CPU StructureProxyOracle
+  oracle/boltz2.py               # GPU Boltz-2 binding oracle (drop-in)
+  pipeline/closed_loop.py        # generate -> oracle -> select driver (the core step)
 docs/                            # method analysis & design
-data/mmp9/                       # target structures & sequences
+data/fragments/                  # library summary
 results/                         # ranked candidates + reports
-configs/                         # run configs
 ```
 
 ## Resuming on a GPU workstation
@@ -37,19 +40,29 @@ and the exact next steps (install Boltz-2, get the MMP9 receptor, close the loop
 
 ## Status
 
-CPU-validated in the dev sandbox (committed):
+CPU-validated (committed; all run without a GPU):
 - [x] Fragment library reproduces the paper exactly (10,880 fragments).
 - [x] DNA secondary-structure scoring via ViennaRNA (DNA Mathews 2004).
 - [x] Critical analysis of AiDTA locating the improvement target.
-- [x] Faithful assembly engine (exposes the proxy-reward degeneracy).
 - [x] MMP9 target/epitope module (P14780; receptors, epitopes, FnII zone, benchmarks).
 - [x] Oracle interface + CPU `StructureProxyOracle` (fixes AiDTA degeneracy).
 - [x] `Boltz2Oracle` GPU wrapper (ready to run; never fabricates scores).
+- [x] Fragment-pool builder — generic (CPU) + HDOCK-docked-pool loader (`generator/pool.py`).
+- [x] Faithful AiDTA assembly engine — proves AiDTA's reward accepts unstructured
+      non-binders (`generator/assembler.py`); WC-hairpin correctness checked over 5k assemblies.
+- [x] **Closed-loop generate→oracle→select driver** (`pipeline/closed_loop.py`) — runs
+      end-to-end on CPU with the proxy oracle; `Boltz2Oracle` is a one-line drop-in.
+      Beats AiDTA-reward selection decisively (see `results/candidates.json`).
+- [x] Receptor helper (`target/receptor.py`) — fetches/slices the MMP9 catalytic
+      domain when the network allows; fails loudly, never fabricates a sequence.
 
 Needs the GPU workstation (see `docs/HANDOFF.md`):
-- [ ] MMP9 fragment pool (HDOCK) / generic pool.
-- [ ] Closed-loop generator↔oracle driver (the core "better than AiDTA" step).
-- [ ] AF3 consensus + MD/MM-GBSA energy tier.
+- [ ] Swap `Boltz2Oracle` into the closed loop (turns the CPU-validated machinery
+      into a binding-driven design run). This is now a `--oracle boltz2` flag flip.
+- [ ] Real MMP9 receptor sequence (UniProt egress was policy-blocked in this
+      session; `target/receptor.py` pulls it on an open-network host).
+- [ ] Optional: HDOCK-dock the fragment library to the epitope for a target-biased pool.
+- [ ] AF3 consensus + MD/MM-GBSA energy tier (Stages 4–5).
 - [ ] Shortlist → synthesis → MST/SPR validation.
 
 ## Environment notes

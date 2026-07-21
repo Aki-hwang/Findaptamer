@@ -1,0 +1,44 @@
+[
+  {
+    "round": 0,
+    "best": 0.9507,
+    "mean": 0.7378,
+    "best_seq": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
+    "n": 40
+  },
+  {
+    "round": 1,
+    "best": 0.9507,
+    "mean": 0.7044,
+    "best_seq": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
+    "n": 40
+  },
+  {
+    "round": 2,
+    "best": 0.9507,
+    "mean": 0.7299,
+    "best_seq": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
+    "n": 39
+  },
+  {
+    "round": 3,
+    "best": 0.9507,
+    "mean": 0.7009,
+    "best_seq": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
+    "n": 40
+  },
+  {
+    "round": 4,
+    "best": 0.9507,
+    "mean": 0.6844,
+    "best_seq": "AACGAGAACGGCAAGCGAAGAGCCGCTTGCCGTT",
+    "n": 40
+  },
+  {
+    "round": 5,
+    "best": 0.964,
+    "mean": 0.7209,
+    "best_seq": "TACCGAACGCGAACTGACGCGTTCGGGCGCGCTT",
+    "n": 40
+  }
+]
