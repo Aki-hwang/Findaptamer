@@ -61,6 +61,8 @@ python3 src/pipeline/closed_loop.py --rounds 12 --pop 60   # writes results/cand
   4090 / L40 / A5000 / A100, e.g. a cloud rental or a proper workstation), then
   `bash scripts/run_on_gpu.sh`. On Windows, use WSL2 (native `.sh`/Makefile need
   a POSIX shell) or run on a Linux GPU host.
+  **Full derivation of why 4 GB fails and what is required:
+  `docs/03_hardware_requirements.md`.**
 
 ## What to do NEXT on the workstation (in order)
 
