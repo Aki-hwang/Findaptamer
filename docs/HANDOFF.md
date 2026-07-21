@@ -54,6 +54,13 @@ python3 src/pipeline/closed_loop.py --rounds 12 --pop 60   # writes results/cand
   rugged Boltz-2 oracle and is deliberately NOT claimed from the proxy run.
 - UniProt egress (`rest.uniprot.org`) is blocked by this session's policy, so the
   real MMP9 sequence could not be fetched here and was **not** fabricated.
+- **GPU check:** this session ran on a CPU-only cloud VM (4 vCPU Xeon, no GPU);
+  the user's local box is a Windows machine with an **NVIDIA T400, 4 GB VRAM** —
+  6× below the 24 GB minimum for the Boltz-2 MMP9+DNA co-fold (see the hardware
+  table in `docs/02_improved_method.md`). **Next step is a ≥24 GB GPU** (RTX
+  4090 / L40 / A5000 / A100, e.g. a cloud rental or a proper workstation), then
+  `bash scripts/run_on_gpu.sh`. On Windows, use WSL2 (native `.sh`/Makefile need
+  a POSIX shell) or run on a Linux GPU host.
 
 ## What to do NEXT on the workstation (in order)
 
