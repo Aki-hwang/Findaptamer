@@ -1,0 +1,21 @@
+# data & model artifacts (regenerable / large)
+*.pkl
+*.pt
+*.pth
+data/fragments/*.csv
+data/**/*.pdb
+data/**/*.cif
+results/**/*.pdb
+results/**/*.cif
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# scratch / third-party reference clones
+scratch/
+AiDTA/
+*.ct
+*.dbn
+# keep small curated outputs
+!results/*.md
+!results/*.json
+!results/*.csv
