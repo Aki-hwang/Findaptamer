@@ -1,5 +1,8 @@
 # Hardware requirements — why the Boltz-2 oracle needs a ≥24 GB GPU
 
+> 한국어 버전: [`docs/03_hardware_requirements.ko.md`](03_hardware_requirements.ko.md)
+
+
 This note derives, from first principles, why the in-loop binding oracle
 (Boltz-2 co-folding MMP9 + a DNA aptamer) does **not** fit on a 4 GB GPU such as
 the NVIDIA **T400**, and states the minimum hardware that does. It is meant to be
