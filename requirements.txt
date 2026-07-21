@@ -1,0 +1,20 @@
+# CPU stack (validated in the dev sandbox) — needed everywhere
+ViennaRNA==2.7.2       # DNA/RNA secondary structure (DNA Mathews 2004 params)
+numpy>=1.26
+scipy>=1.11
+pandas>=2.0
+biopython>=1.83
+torch>=2.2             # generator NN / RL (CPU or GPU build)
+
+# --- GPU-only tools (install on the workstation, not needed for CPU stages) ---
+# Boltz-2 in-loop binding oracle (MIT, commercial-OK):
+#   pip install boltz
+# AlphaFold3 consensus (weights on request, NON-COMMERCIAL):
+#   https://github.com/google-deepmind/alphafold3
+# Chai-1 alternative co-folder (Apache-2.0):
+#   pip install chai_lab
+# MD + MM/GBSA energy tier:
+#   conda install -c conda-forge openmm ambertools    (or pip install openmm)
+#
+# Fragment/receptor docking (CPU, external servers/binaries):
+#   HDOCK / HADDOCK3  — see https://hdock.phys.hust.edu.cn , https://www.bonvinlab.org/haddock3

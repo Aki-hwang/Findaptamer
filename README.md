@@ -29,15 +29,28 @@ results/                         # ranked candidates + reports
 configs/                         # run configs
 ```
 
+## Resuming on a GPU workstation
+
+**Read `docs/HANDOFF.md` first.** It lists the locked-in decisions (goal =
+high-affinity binder; bar to beat = F3B ~20 nM), what is already validated on CPU,
+and the exact next steps (install Boltz-2, get the MMP9 receptor, close the loop).
+
 ## Status
 
-Foundations (target-independent, validated in this environment):
+CPU-validated in the dev sandbox (committed):
 - [x] Fragment library reproduces the paper exactly (10,880 fragments).
-- [x] DNA secondary-structure scoring via ViennaRNA (DNA Mathews 2004) — validated
-      against AiDTA's example sequence.
+- [x] DNA secondary-structure scoring via ViennaRNA (DNA Mathews 2004).
 - [x] Critical analysis of AiDTA locating the improvement target.
-- [ ] MMP9 target/epitope module (research in progress).
-- [ ] In-the-loop oracle + generator (compute-dependent; see method doc).
+- [x] Faithful assembly engine (exposes the proxy-reward degeneracy).
+- [x] MMP9 target/epitope module (P14780; receptors, epitopes, FnII zone, benchmarks).
+- [x] Oracle interface + CPU `StructureProxyOracle` (fixes AiDTA degeneracy).
+- [x] `Boltz2Oracle` GPU wrapper (ready to run; never fabricates scores).
+
+Needs the GPU workstation (see `docs/HANDOFF.md`):
+- [ ] MMP9 fragment pool (HDOCK) / generic pool.
+- [ ] Closed-loop generator↔oracle driver (the core "better than AiDTA" step).
+- [ ] AF3 consensus + MD/MM-GBSA energy tier.
+- [ ] Shortlist → synthesis → MST/SPR validation.
 
 ## Environment notes
 
