@@ -43,14 +43,28 @@ if [ -f "$CALIB" ]; then
   if python - "$CALIB" <<'PY'
 import json, sys
 s = json.load(open(sys.argv[1]))["summary"]
-ok = s.get("auroc", 0) >= 0.75 and s.get("oracle") == "boltz2_interface"
-print(f"   calibration: oracle={s.get('oracle')} AUROC={s.get('auroc')} -> {'PASS' if ok else 'FAIL'}")
+au, z = s.get("auroc", 0), s.get("separation_z")
+ok = (s.get("oracle") == "boltz2_interface" and au >= 0.75
+      and (z is None or z >= 1.0))
+print(f"   calibration: oracle={s.get('oracle')} AUROC={au} z={z} "
+      f"(positive sequences={s.get('n_positive_sequences')}) -> {'PASS' if ok else 'FAIL'}")
+if s.get("evidence_note"):
+    print(f"   note: {s['evidence_note']}")
 sys.exit(0 if ok else 1)
 PY
   then :; else
-    echo "!! Calibration did not pass. Fix the oracle before designing."
-    echo "   Re-run: python src/oracle/calibrate.py --receptor $RECEPTOR"
-    exit 1
+    if [ "${FORCE:-0}" = "1" ]; then
+      echo "!! Calibration did not pass, but FORCE=1 was set - proceeding anyway."
+      echo "   The oracle has not been shown to separate binders from negatives;"
+      echo "   treat every score from this run as unvalidated."
+    else
+      echo "!! Calibration did not pass. Fix the oracle before designing."
+      echo "   Re-run:  python src/oracle/calibrate.py --receptor $RECEPTOR"
+      echo "   Options: try the other receptor slice (--domain catalytic_nofn),"
+      echo "            raise --seeds, or inspect results/calibration.json."
+      echo "   To proceed anyway (results will be unvalidated): FORCE=1 $0"
+      exit 1
+    fi
   fi
 else
   echo "!! No calibration found at $CALIB."

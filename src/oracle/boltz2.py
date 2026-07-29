@@ -39,6 +39,7 @@ class Boltz2Config:
     receptor_sequence: str          # MMP9 protein sequence (e.g. catalytic domain)
     protein_id: str = "A"
     dna_id: str = "B"
+    ligand_type: str = "dna"     # "dna" or "rna" — the entity Boltz co-folds
     use_msa_server: bool = True     # let boltz build the protein MSA (needs network)
     precomputed_msa: str | None = None   # path to a protein .a3m to reuse (offline)
     devices: int = 1
@@ -81,10 +82,16 @@ def _write_yaml(path: Path, cfg: Boltz2Config, aptamer_seq: str):
             f"      sequence: {cfg.receptor_sequence}"]
     if cfg.precomputed_msa:
         prot.append(f"      msa: {cfg.precomputed_msa}")
+    lig = cfg.ligand_type.lower()
+    if lig not in ("dna", "rna"):
+        raise ValueError(f"ligand_type must be 'dna' or 'rna', got {lig!r}")
+    seq = aptamer_seq.replace("&", "").upper()
+    # keep the alphabet consistent with the declared entity
+    seq = seq.replace("U", "T") if lig == "dna" else seq.replace("T", "U")
     lines = ["version: 1", "sequences:", *prot,
-             f"  - dna:",
+             f"  - {lig}:",
              f"      id: {cfg.dna_id}",
-             f"      sequence: {aptamer_seq.replace('&', '')}"]
+             f"      sequence: {seq}"]
     path.write_text("\n".join(lines) + "\n")
 
 
