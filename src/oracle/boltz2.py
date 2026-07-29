@@ -98,25 +98,43 @@ class Boltz2Oracle(Oracle):
     def _binding_score(self, conf: dict) -> tuple[float, dict]:
         """Derive a [0,1] interface binding score from Boltz confidence JSON.
 
-        Prefer the protein-DNA chain-pair ipTM (true interface signal); fall back
-        to global ipTM. Also surface complex ipTM/ptm for transparency.
+        Prefers the protein-DNA chain-pair ipTM (the true interface signal) and
+        falls back to the global ipTM. Boltz keys `pair_chains_iptm` by chain
+        INDEX as a string ("0"/"1"), not by the chain ids we set in the YAML, so
+        we look up both spellings and, failing that, take the single off-diagonal
+        entry of a 2-chain matrix. Getting this wrong silently downgrades the
+        score to the weaker global ipTM.
         """
-        iptm = conf.get("iptm") or conf.get("complex_iptm")
+        def num(x):
+            return float(x) if isinstance(x, (int, float)) else None
+
+        iptm = num(conf.get("iptm"))
+        if iptm is None:
+            iptm = num(conf.get("complex_iptm"))
+
         pair = conf.get("pair_chains_iptm") or conf.get("chains_pair_iptm") or {}
-        # pair is typically a nested dict {chainA: {chainB: value}}
         interface = None
-        try:
-            a, b = self.cfg.protein_id, self.cfg.dna_id
-            interface = (pair.get(a, {}).get(b)
-                         if isinstance(pair, dict) else None)
-            if interface is None and isinstance(pair, dict):
-                interface = pair.get(b, {}).get(a)
-        except Exception:
-            interface = None
+        if isinstance(pair, dict) and pair:
+            a, b = str(self.cfg.protein_id), str(self.cfg.dna_id)
+            for k1, k2 in ((a, b), (b, a), ("0", "1"), ("1", "0")):
+                sub = pair.get(k1)
+                if isinstance(sub, dict) and num(sub.get(k2)) is not None:
+                    interface = num(sub.get(k2))
+                    break
+            if interface is None:
+                # any 2-chain matrix: take the off-diagonal value
+                offdiag = [num(v) for k1, sub in pair.items()
+                           if isinstance(sub, dict)
+                           for k2, v in sub.items()
+                           if k1 != k2 and num(v) is not None]
+                if offdiag:
+                    interface = max(offdiag)
+
         value = interface if interface is not None else iptm
         value = float(value) if value is not None else 0.0
         return max(0.0, min(1.0, value)), {
             "interface_iptm": interface, "complex_iptm": iptm,
+            "used": "chain_pair" if interface is not None else "global_iptm",
             "ptm": conf.get("ptm"), "confidence_score": conf.get("confidence_score"),
         }
 

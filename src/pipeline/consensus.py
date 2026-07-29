@@ -90,21 +90,16 @@ def contact_residues(structure_path: str, cutoff: float = CONTACT_CUTOFF_A):
     if not prot or not dna:
         return set(), 0, 0
 
-    dna_atoms = [c for residues in dna.values() for _, _, coords in residues
-                 for c in coords]
-    cut2 = cutoff * cutoff
+    import numpy as np
+    dna_atoms = np.array([c for residues in dna.values() for _, _, coords in residues
+                          for c in coords], dtype=float)
+    cut2 = float(cutoff) ** 2
     contacts = set()
     for residues in prot.values():
         for resseq, _, coords in residues:
-            hit = False
-            for (px, py, pz) in coords:
-                for (dx, dy, dz) in dna_atoms:
-                    if (px - dx) ** 2 + (py - dy) ** 2 + (pz - dz) ** 2 <= cut2:
-                        hit = True
-                        break
-                if hit:
-                    break
-            if hit:
+            P = np.asarray(coords, dtype=float)
+            d2 = ((P[:, None, :] - dna_atoms[None, :, :]) ** 2).sum(-1)
+            if bool((d2 <= cut2).any()):
                 contacts.add(resseq)
     n_prot = sum(len(r) for r in prot.values())
     n_dna = sum(len(r) for r in dna.values())

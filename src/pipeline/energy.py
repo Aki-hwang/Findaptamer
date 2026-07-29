@@ -123,9 +123,18 @@ def mmgbsa_single_structure(complex_pdb: str, work: Path, ns: float = 0.5,
 
     pdb = PDBFile(str(complex_pdb))
     modeller = Modeller(pdb.topology, pdb.positions)
-    modeller.addHydrogens(ff)
-    system = ff.createSystem(modeller.topology, nonbondedMethod=NoCutoff,
-                             constraints=HBonds)
+    try:
+        modeller.addHydrogens(ff)
+        system = ff.createSystem(modeller.topology, nonbondedMethod=NoCutoff,
+                                 constraints=HBonds)
+    except Exception as e:
+        names = sorted({r.name.strip() for r in modeller.topology.residues()})
+        raise RuntimeError(
+            f"Amber14/GBn2 could not parametrize {complex_pdb}: {e}\n"
+            f"Residue names present: {names}\n"
+            "DNA must be named DA/DT/DG/DC (with 5'/3' variants) for the "
+            "amber14 DNA.OL15 templates. If the predictor wrote single-letter "
+            "names, rename them before running the energy tier.") from e
 
     integ = LangevinMiddleIntegrator(300 * unit.kelvin, 1 / unit.picosecond,
                                      0.002 * unit.picoseconds)
