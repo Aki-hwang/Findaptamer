@@ -22,17 +22,39 @@ sacctmgr show assoc format=User,Partition where user=`whoami` 2>/dev/null \
 
 echo
 echo "==> 2. python environment"
+# HPC nodes often lack python3-venv and users have no sudo, so fall back to a
+# user-space Miniconda install (self-contained, no root required).
+CONDA_HOME="${CONDA_HOME:-$HOME/miniconda3}"
+if ! command -v conda >/dev/null 2>&1 && [ -x "$CONDA_HOME/bin/conda" ]; then
+  # shellcheck disable=SC1091
+  source "$CONDA_HOME/etc/profile.d/conda.sh"
+fi
+
 if command -v conda >/dev/null 2>&1; then
   # shellcheck disable=SC1091
   source "$(conda info --base)/etc/profile.d/conda.sh"
   conda env list | grep -q "^${ENV_NAME} " || conda create -y -n "$ENV_NAME" python=3.11
   conda activate "$ENV_NAME"
-  echo "   conda env: $ENV_NAME"
-else
+  echo "   conda env: $ENV_NAME ($(python -V))"
+elif python3 -m venv --help >/dev/null 2>&1 && python3 -c "import ensurepip" 2>/dev/null; then
   [ -d .venv ] || python3 -m venv .venv
   # shellcheck disable=SC1091
   source .venv/bin/activate
-  echo "   venv: .venv"
+  echo "   venv: .venv ($(python -V))"
+else
+  echo "   no conda and python3-venv is unavailable (no sudo on a shared node)."
+  echo "   installing Miniconda into $CONDA_HOME (user-space, no root needed)..."
+  MC=/tmp/miniconda_$USER.sh
+  curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o "$MC" \
+    || wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O "$MC"
+  bash "$MC" -b -p "$CONDA_HOME"
+  rm -f "$MC"
+  # shellcheck disable=SC1091
+  source "$CONDA_HOME/etc/profile.d/conda.sh"
+  "$CONDA_HOME/bin/conda" init bash >/dev/null 2>&1 || true
+  conda create -y -n "$ENV_NAME" python=3.11
+  conda activate "$ENV_NAME"
+  echo "   Miniconda installed; conda env: $ENV_NAME ($(python -V))"
 fi
 python -m pip install -q --upgrade pip
 
