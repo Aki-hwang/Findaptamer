@@ -106,12 +106,34 @@ python src/oracle/calibrate.py --receptor data/mmp9/mmp9_receptor.fasta
 column -s, -t results/pilot/top_candidates.csv | head -20
 ```
 
-## 남은 단계 (Stage 4–5, 서버에서 추가 구현)
+## Stage 4-5 (구현 완료) — 정밀 검증 및 최종 후보
 
-- **합의(consensus)**: 상위 후보를 다른 모델(Chai-1)·다중 시드로 재접힘 → 일치하는 것만 통과.
-  ※ AF3는 80GB 필요 + 비상업 라이선스라, 40/48GB 환경에서는 Chai-1 권장.
-- **에너지 계층**: 짧은 MD(OpenMM) + MM/GBSA로 ΔG 정량 랭킹.
-- **최종**: 10–30개 합성 → MST/SPR로 Kd 측정, MMP2/MMP7 선택성 확인.
+파일럿이 끝나면 이어서 실행합니다.
+
+```bash
+bash scripts/run_refine.sh
+# 옵션: TOP=20 SEEDS=3 USE_CHAI=1 ENERGY_N=10 NS=1.0 bash scripts/run_refine.sh
+```
+
+| 단계 | 파일 | 하는 일 |
+|---|---|---|
+| **Stage 4 합의** | `src/pipeline/consensus.py` | 후보마다 **다중 시드 Boltz-2**(+선택적 **Chai-1**)로 재예측. 신뢰도 평균/편차와 **접촉 잔기 집합의 Jaccard 일치도**를 계산 → *"매번 같은 자리에 붙는가"* 를 검증. 단발성 고득점으로는 통과 불가 |
+| **Stage 5 에너지** | `src/pipeline/energy.py` | 짧은 **MD(OpenMM, 암시적 용매)** 후 **단일궤적 MM/GBSA**로 ΔG 계산. AiDTA에는 아예 없는 단계 |
+| **최종 리포트** | `src/pipeline/report.py` | 전 단계를 합쳐 **합성 후보 shortlist** 생성 (`results/report/REPORT.md`) |
+
+**핵심 지표 읽는 법**
+- `contact_jaccard` — 독립 예측 간 접촉 부위 일치도. **낮으면 점수가 높아도 위양성**입니다.
+- `dG_bind_kcal_mol` — 엔트로피 무시·암시적 용매이므로 **Kd 예측값이 아니라 순위 신호**입니다.
+- `fnII_fraction` — FnII 엑소사이트 접촉 비율. binder 목표에선 참고용이지만, 나중에
+  억제제로 전환하면 **역선별 기준**이 됩니다(핵산이 여기 붙으면 MMP9를 활성화).
+- `tier` — 3=에너지까지 통과(가장 신뢰), 2=합의까지, 1=파일럿만.
+
+**최종 산출물**
+```
+results/consensus/consensus_ranked.csv   합의 검증 통과 후보
+results/energy/energy_ranked.csv         MM/GBSA ΔG 순위
+results/report/REPORT.md                 합성용 shortlist ← 이걸 보세요
+```
 
 ## 주의사항
 
@@ -119,6 +141,9 @@ column -s, -t results/pilot/top_candidates.csv | head -20
 - `--use_msa_server`는 외부 MSA 서버를 씁니다. 폐쇄망이면 단백질 MSA를 미리 만들어
   `Boltz2Config(precomputed_msa=...)`로 넘기세요(수용체가 고정이라 1회만 만들면 됨).
 - Boltz 가중치는 `setup_login.sh`가 로그인 노드에서 미리 받습니다(GPU 낭비 방지).
+- Stage 5는 **OpenMM 필요**: `pip install openmm`. 미설치 시 자동으로 건너뛰고
+  합의 결과만으로 리포트를 만듭니다.
+- Stage 4에 Chai-1을 쓰려면 `pip install chai_lab` (Apache-2.0, 상업 가능).
 
 ## git 참고
 
