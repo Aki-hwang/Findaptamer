@@ -24,7 +24,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-PARTITION="${PARTITION:?set PARTITION (p1|p2|p3) — check with: sacctmgr show assoc format=User,Partition where user=\`whoami\`}"
+PARTITION="${PARTITION:-p2}"   # mellab -> p2 (verify: sacctmgr show assoc format=User,Partition user=$(whoami))
 EMAIL="${EMAIL:-aki@inha.ac.kr}"
 GPU_TYPE="${GPU_TYPE:-a6000}"
 GPU_N="${GPU_N:-2}"

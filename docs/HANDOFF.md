@@ -14,7 +14,7 @@ git clone <저장소> && cd Findaptamer
 bash scripts/setup_login.sh
 
 # 2) GPU 신청 + 실행 (PARTITION만 본인 것으로)
-PARTITION=p1 bash scripts/slurm_run.sh
+bash scripts/slurm_run.sh          # 파티션 기본값 p2
 ```
 `slurm_run.sh`가 GPU를 잡고 → **오라클 캘리브레이션** → **닫힌 루프 설계**까지 실행합니다.
 결과: `results/pilot/top_candidates.csv`
@@ -22,22 +22,22 @@ PARTITION=p1 bash scripts/slurm_run.sh
 ### 옵션
 ```bash
 # 배치(백그라운드) 제출
-PARTITION=p1 MODE=batch bash scripts/slurm_run.sh
+MODE=batch bash scripts/slurm_run.sh
 squeue -u `whoami`;  tail -f logs/mmp9apt-*.out
 
 # 자원/시간 조절 (a6000·a100은 최대 4장, a40은 최대 3장, 시간 최대 7-00:00:00)
-PARTITION=p1 GPU_TYPE=a6000 GPU_N=4 TIME=2-00:00:00 bash scripts/slurm_run.sh
+GPU_TYPE=a6000 GPU_N=4 TIME=2-00:00:00 bash scripts/slurm_run.sh
 
 # 캘리브레이션만 / 설계만
-PARTITION=p1 STAGE=calibrate bash scripts/slurm_run.sh
-PARTITION=p1 STAGE=pilot     bash scripts/slurm_run.sh
+STAGE=calibrate bash scripts/slurm_run.sh
+STAGE=pilot     bash scripts/slurm_run.sh
 ```
 
 ### 시간 제한 대비 (중요)
 할당 시간이 끝나도 작업이 사라지지 않습니다. 라운드마다 `checkpoint.json`을 저장하고,
 `run_pilot.sh`는 기본으로 **이어서 실행(--resume)** 합니다.
 ```bash
-MAX_HOURS=20 PARTITION=p1 TIME=1-00:00:00 bash scripts/slurm_run.sh  # 20시간 후 안전 종료
+MAX_HOURS=20 TIME=1-00:00:00 bash scripts/slurm_run.sh  # 20시간 후 안전 종료
 # 다음 할당에서 같은 명령을 다시 실행하면 중단 지점부터 이어감
 ```
 
@@ -49,7 +49,8 @@ MAX_HOURS=20 PARTITION=p1 TIME=1-00:00:00 bash scripts/slurm_run.sh  # 20시간 
 | a100 | 40GB | 4장 | a100-n1~n4 |
 | a40 | 48GB | **3장** | sv8ka-n1~n3 |
 
-- **최대 7일**(`7-00:00:00`), 파티션 `p1/p2/p3`(사용자별 지정), 메일은 `@inha.ac.kr`만.
+- **최대 7일**(`7-00:00:00`). 이 계정(mellab)의 파티션은 **p2**(기본값 설정됨). 메일은 `@inha.ac.kr`만.
+- p2 사용 가능 노드: a100-n2~n4, **sv4ka-n2~n4(a6000)**, sv8ka-n2~n3(a40).
 - 센터가 사용시간을 **모니터링**하며 정책 위반 시 **작업 취소·패널티**. → 설치는 반드시
   로그인 노드에서, GPU는 계산에만.
 - **권장: a6000** — 48GB라 수용체 촉매도메인 337aa를 자르지 않고 그대로 넣을 수 있고,
