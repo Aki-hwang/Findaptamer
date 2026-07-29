@@ -117,15 +117,36 @@ def run(args):
     outdir = Path(args.out)
     outdir.mkdir(parents=True, exist_ok=True)
 
+    # ---- resume from checkpoint (Slurm allocations are time-boxed) ---------
+    ckpt = outdir / "checkpoint.json"
     weights = [1.0] * len(pool)
     seen: dict[str, dict] = {}
     history = []
+    start_round = 1
+    if args.resume and ckpt.exists():
+        state = json.loads(ckpt.read_text())
+        if len(state.get("weights", [])) == len(pool):
+            weights = state["weights"]
+            seen = state.get("seen", {})
+            history = state.get("history", [])
+            start_round = state.get("next_round", 1)
+            print(f"resumed from {ckpt}: round {start_round}, "
+                  f"{len(seen)} sequences already scored\n")
+        else:
+            print(f"!! checkpoint pool size mismatch — starting fresh\n")
+
     t0 = time.time()
+
+    def save_ckpt(next_round):
+        ckpt.write_text(json.dumps(
+            {"weights": weights, "seen": seen, "history": history,
+             "next_round": next_round, "pool_size": len(pool)},
+            default=str))
 
     print(f"pool={len(pool)} fragments | oracle={oracle_kind} | "
           f"rounds={args.rounds} x {args.per_round}\n")
 
-    for r in range(1, args.rounds + 1):
+    for r in range(start_round, args.rounds + 1):
         # ---- 1. sample ----------------------------------------------------
         cands, tries = [], 0
         while len(cands) < args.per_round and tries < args.per_round * 40:
@@ -194,6 +215,12 @@ def run(args):
                         "best_so_far": round(best["oracle"], 4)})
         print(f"round {r:2d}: scored={len(rows):3d}  mean={mean_r:.4f}  "
               f"elite={history[-1]['elite_mean']:.4f}  best={best['oracle']:.4f}")
+        save_ckpt(r + 1)
+
+        if args.max_hours and (time.time() - t0) / 3600 >= args.max_hours:
+            print(f"\nreached --max-hours {args.max_hours}; checkpointed at round {r}. "
+                  f"Resume with the same --out and --resume.")
+            break
 
     # ---- report -----------------------------------------------------------
     ranked = sorted((v for v in seen.values() if v.get("oracle") is not None),
@@ -248,6 +275,12 @@ def main():
     ap.add_argument("--top", type=int, default=30)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="results/run1")
+    ap.add_argument("--resume", action="store_true",
+                    help="continue from checkpoint.json in --out (for time-boxed "
+                         "Slurm allocations)")
+    ap.add_argument("--max-hours", type=float, default=0,
+                    help="stop and checkpoint after this many hours (0 = no limit); "
+                         "set below your Slurm --time so the run ends cleanly")
     run(ap.parse_args())
 
 
