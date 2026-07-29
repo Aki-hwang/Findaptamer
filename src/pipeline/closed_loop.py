@@ -57,8 +57,13 @@ def weighted_assemble(pool, weights, min_len, max_len, rng):
 
     Position (linkage site) is chosen uniformly among legal sites, so the learned
     signal lives in the fragment distribution — the part that carries chemistry.
+
+    Returns (sequence, structure, used_indices). `used_indices` is recorded as the
+    assembly happens: recovering it afterwards by substring search is unreliable
+    (a 3-mer matches anywhere by chance), which would corrupt the weight update.
     """
     seq, struct = "", ""
+    used = []
     guard = 0
     while _realized_len(seq) < min_len:
         guard += 1
@@ -72,15 +77,22 @@ def weighted_assemble(pool, weights, min_len, max_len, rng):
             states = [s for s in states if _realized_len(s[0]) <= max_len]
             if states:
                 seq, struct = rng.choice(states)
+                used.append(idx)
                 break
         else:
             return None
-    return seq, struct
+    return seq, struct, used
 
 
 def fragments_used(sequence: str, pool) -> set[int]:
-    """Which pool fragments appear in the assembled sequence (substring match on
-    the realized strands). Approximate but sufficient for a distribution update."""
+    """FALLBACK ONLY: guess the fragments in a sequence by substring match.
+
+    Used just for records restored from an older checkpoint that predate index
+    tracking. It is heavily over-inclusive — short fragments match by chance, so
+    on a 30-45 nt aptamer it reports several times more fragments than were
+    actually used. Never use it to drive the weight update; `weighted_assemble`
+    records the true indices instead.
+    """
     flat = sequence.replace("&", "")
     used = set()
     for i, (fs, _) in enumerate(pool):
@@ -165,15 +177,15 @@ def run(args):
 
         # ---- 2. cheap pre-filter -----------------------------------------
         if prefilter and args.prefilter_keep < 1.0:
-            scored = [(prefilter.score(s.replace("&", "")).value, (s, st))
-                      for s, st in cands]
+            scored = [(prefilter.score(c[0].replace("&", "")).value, c)
+                      for c in cands]
             scored.sort(key=lambda x: x[0], reverse=True)
             k = max(1, int(len(scored) * args.prefilter_keep))
             cands = [c for _, c in scored[:k]]
 
         # ---- 3. oracle ----------------------------------------------------
         rows = []
-        for s, st in cands:
+        for s, st, used_idx in cands:
             flat = s.replace("&", "")
             try:
                 sc = oracle.score(flat)
@@ -182,7 +194,8 @@ def run(args):
                 continue
             rec = {"sequence": flat, "assembled": s, "structure": st,
                    "oracle": sc.value, "oracle_kind": sc.kind,
-                   "details": sc.details, "round": r}
+                   "details": sc.details, "round": r,
+                   "fragments": sorted(set(used_idx))}
             rows.append(rec)
             seen[flat] = rec
         if not rows:
@@ -196,13 +209,19 @@ def run(args):
 
         counts = [0.0] * len(pool)
         for e in elites:
-            for i in fragments_used(e["assembled"], pool):
+            idxs = e.get("fragments")
+            if idxs is None:                      # legacy checkpoint record
+                idxs = fragments_used(e["assembled"], pool)
+            for i in idxs:
                 counts[i] += 1.0
         total = sum(counts) or 1.0
         target = [c / total for c in counts]
-        uniform = 1.0 / len(pool)
-        # smooth toward uniform so no fragment dies out (keeps exploration alive)
-        weights = [(1 - args.lr) * w + args.lr * (args.smooth * uniform +
+        # Target is a probability vector; multiplying by len(pool) puts it on a
+        # mean-1 scale. The uniform pull must sit on that SAME scale (1.0), not
+        # 1/len(pool) — otherwise smoothing is len(pool)x too weak and unused
+        # fragments collapse to min_weight within a few rounds, killing
+        # exploration.
+        weights = [(1 - args.lr) * w + args.lr * (args.smooth * 1.0 +
                                                   (1 - args.smooth) * t * len(pool))
                    for w, t in zip(weights, target)]
         weights = [max(w, args.min_weight) for w in weights]

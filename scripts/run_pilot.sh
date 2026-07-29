@@ -20,7 +20,7 @@ MIN_LEN="${MIN_LEN:-30}"
 MAX_LEN="${MAX_LEN:-45}"
 TOP="${TOP:-30}"
 OUT="${OUT:-results/pilot}"
-RESUME="${RESUME:-1}"          # 1 = continue from checkpoint if present
+RESUME="${RESUME:-1}"          # 1 = continue from checkpoint; 0 = fresh start
 MAX_HOURS="${MAX_HOURS:-0}"    # stop+checkpoint before the Slurm --time expires
 CALIB="${CALIB:-results/calibration.json}"
 
@@ -71,7 +71,7 @@ python src/pipeline/closed_loop.py \
   --prefilter \
   --top "$TOP" \
   --max-hours "$MAX_HOURS" \
-  ${RESUME:+--resume} \
+  $([ "$RESUME" = "1" ] && echo --resume) \
   --out "$OUT"
 
 echo
