@@ -24,7 +24,7 @@ RESUME="${RESUME:-1}"          # 1 = continue from checkpoint; 0 = fresh start
 MAX_HOURS="${MAX_HOURS:-0}"    # stop+checkpoint before the Slurm --time expires
 CALIB="${CALIB:-results/calibration.json}"
 
-# activate the env created by setup_server.sh
+# activate the env created by setup_login.sh
 if command -v conda >/dev/null 2>&1 && conda env list | grep -q "^${ENV_NAME:-findaptamer} "; then
   # shellcheck disable=SC1091
   source "$(conda info --base)/etc/profile.d/conda.sh"; conda activate "${ENV_NAME:-findaptamer}"
@@ -36,7 +36,7 @@ fi
 echo "==> preflight"
 [ -f "$RECEPTOR" ] || { echo "!! missing $RECEPTOR — run: python src/target/fetch_receptor.py"; exit 1; }
 [ -f "$POOL" ]     || { echo "!! missing $POOL — run: python src/generator/pool.py"; exit 1; }
-command -v boltz >/dev/null || { echo "!! boltz not found — run scripts/setup_server.sh"; exit 1; }
+command -v boltz >/dev/null || { echo "!! boltz not found — run scripts/setup_login.sh"; exit 1; }
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader || { echo "!! no GPU"; exit 1; }
 
 if [ -f "$CALIB" ]; then

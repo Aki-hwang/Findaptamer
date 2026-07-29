@@ -81,11 +81,18 @@ def main():
                      "ens_freq_mfe": round(loc["ens_freq_mfe"], 3),
                      "mfe_structure": loc["mfe_structure"]})
 
+    def _num(r, key, default=0.0):
+        """None-safe numeric access: a present-but-null value must not reach the
+        sort comparison (float < None raises), which would kill the final report
+        after every expensive stage had already succeeded."""
+        v = r.get(key)
+        return default if v is None else float(v)
+
     def sort_key(r):
         return (-r["tier"],
-                r.get("dG_bind_kcal_mol", 0.0),          # more negative first
-                -(r.get("consensus_score") or 0.0),
-                -(r.get("pilot_score") or 0.0))
+                _num(r, "dG_bind_kcal_mol"),             # more negative first
+                -_num(r, "consensus_score"),
+                -_num(r, "pilot_score"))
     rows.sort(key=sort_key)
     short = rows[:args.n]
 
