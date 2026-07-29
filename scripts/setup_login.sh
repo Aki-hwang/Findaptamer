@@ -33,7 +33,8 @@ fi
 if command -v conda >/dev/null 2>&1; then
   # shellcheck disable=SC1091
   source "$(conda info --base)/etc/profile.d/conda.sh"
-  conda env list | grep -q "^${ENV_NAME} " || conda create -y -n "$ENV_NAME" python=3.11
+  conda env list | grep -q "^${ENV_NAME} " || \
+    conda create -y -n "$ENV_NAME" --override-channels -c conda-forge python=3.11
   conda activate "$ENV_NAME"
   echo "   conda env: $ENV_NAME ($(python -V))"
 elif python3 -m venv --help >/dev/null 2>&1 && python3 -c "import ensurepip" 2>/dev/null; then
@@ -52,7 +53,9 @@ else
   # shellcheck disable=SC1091
   source "$CONDA_HOME/etc/profile.d/conda.sh"
   "$CONDA_HOME/bin/conda" init bash >/dev/null 2>&1 || true
-  conda create -y -n "$ENV_NAME" python=3.11
+  conda config --add channels conda-forge >/dev/null 2>&1 || true
+  conda config --set channel_priority strict >/dev/null 2>&1 || true
+  conda create -y -n "$ENV_NAME" --override-channels -c conda-forge python=3.11
   conda activate "$ENV_NAME"
   echo "   Miniconda installed; conda env: $ENV_NAME ($(python -V))"
 fi
