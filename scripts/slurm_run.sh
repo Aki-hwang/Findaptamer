@@ -54,6 +54,12 @@ if command -v conda >/dev/null 2>&1 && conda env list | grep -q "^${ENV_NAME:-fi
   source "\$(conda info --base)/etc/profile.d/conda.sh"; conda activate "${ENV_NAME:-findaptamer}"
 elif [ -d .venv ]; then source .venv/bin/activate; fi
 
+if [ ! -s data/mmp9/mmp9_receptor_msa.a3m ] && [ ! -s data/mmp9/mmp9_receptor_msa.csv ]; then
+  echo; echo "=== caching receptor MSA (once; speeds up every later prediction) ==="
+  python src/target/make_msa.py --receptor "$RECEPTOR" || \
+    echo "   !! MSA caching failed — continuing with --use_msa_server (slower)"
+fi
+
 if [ "$STAGE" = "calibrate" ] || [ "$STAGE" = "both" ]; then
   echo; echo "=== oracle calibration (gate) ==="
   python src/oracle/calibrate.py --receptor "$RECEPTOR" --out results/calibration.json

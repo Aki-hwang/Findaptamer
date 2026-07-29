@@ -46,6 +46,22 @@ class Boltz2Config:
     extra_args: tuple = ()
 
 
+DEFAULT_MSA_CACHE = "data/mmp9/mmp9_receptor_msa"
+
+
+def find_cached_msa(base: str = DEFAULT_MSA_CACHE):
+    """Return a cached receptor alignment (.a3m/.csv) if one exists.
+
+    Generated once by src/target/make_msa.py. Reusing it removes the per-call
+    MSA-server round trip, which otherwise dominates runtime in the closed loop.
+    """
+    for ext in (".a3m", ".csv"):
+        p = Path(f"{base}{ext}")
+        if p.exists() and p.stat().st_size > 0:
+            return str(p.resolve())
+    return None
+
+
 def _write_yaml(path: Path, cfg: Boltz2Config, aptamer_seq: str):
     prot = [f"  - protein:",
             f"      id: {cfg.protein_id}",
@@ -69,6 +85,10 @@ def _find_confidence_json(out_dir: Path):
 class Boltz2Oracle(Oracle):
     def __init__(self, config: Boltz2Config):
         self.cfg = config
+        if config.precomputed_msa is None:
+            cached = find_cached_msa()
+            if cached:
+                self.cfg.precomputed_msa = cached
         if shutil.which(config.boltz_bin) is None:
             raise RuntimeError(
                 f"'{config.boltz_bin}' not found on PATH. Install with "
