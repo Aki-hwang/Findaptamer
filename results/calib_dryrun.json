@@ -1,0 +1,136 @@
+{
+  "summary": {
+    "oracle": "structure_proxy (CPU dry-run \u2014 NOT a binding test)",
+    "n_positives": 1,
+    "n_negatives": 6,
+    "positive_mean": 0.337,
+    "negative_mean": 0.4476,
+    "positive_min": 0.337,
+    "negative_max": 0.627,
+    "auroc": 0.167,
+    "suggested_threshold": 0.337,
+    "youden_j": 0.167,
+    "verdict": "FAIL \u2014 insufficient separation; do NOT drive generation with this oracle"
+  },
+  "rows": [
+    {
+      "label": "F3B(as DNA)",
+      "class": "positive",
+      "sequence": "TGCCCTGCCCTCACCCGTTAGCCTGAGCGCCCCGCA",
+      "score": 0.337,
+      "details": {
+        "decisive": 0.118,
+        "stable": 0.159,
+        "structured": 0.542,
+        "gc": 0.937,
+        "mfe": -2.0,
+        "paired_fraction": 0.167,
+        "gc_fraction": 0.722,
+        "ens_freq_mfe": 0.118,
+        "mfe_structure": "..........................(((...)))."
+      }
+    },
+    {
+      "label": "shuffle0",
+      "class": "negative",
+      "sequence": "TACCCTGCCTTCAGGTCCGCCCGTCCCCACACGCGG",
+      "score": 0.627,
+      "details": {
+        "decisive": 0.349,
+        "stable": 0.444,
+        "structured": 1.0,
+        "gc": 0.937,
+        "mfe": -5.599999904632568,
+        "paired_fraction": 0.556,
+        "gc_fraction": 0.722,
+        "ens_freq_mfe": 0.349,
+        "mfe_structure": "...((((....)))).((((..((....))..))))"
+      }
+    },
+    {
+      "label": "shuffle1",
+      "class": "negative",
+      "sequence": "TCCCCTAGTCCCCCCGCGCTCACGCACAGTCTCGGG",
+      "score": 0.3545,
+      "details": {
+        "decisive": 0.122,
+        "stable": 0.222,
+        "structured": 0.542,
+        "gc": 0.937,
+        "mfe": -2.799999952316284,
+        "paired_fraction": 0.167,
+        "gc_fraction": 0.722,
+        "ens_freq_mfe": 0.122,
+        "mfe_structure": "...............(((....)))..........."
+      }
+    },
+    {
+      "label": "shuffle2",
+      "class": "negative",
+      "sequence": "CGCCCGCGCCGCTTCGTCGGTAGCCCCTAACCCCTA",
+      "score": 0.4635,
+      "details": {
+        "decisive": 0.207,
+        "stable": 0.206,
+        "structured": 0.819,
+        "gc": 0.937,
+        "mfe": -2.5999999046325684,
+        "paired_fraction": 0.278,
+        "gc_fraction": 0.722,
+        "ens_freq_mfe": 0.207,
+        "mfe_structure": "...(((((......)).)))................"
+      }
+    },
+    {
+      "label": "random0",
+      "class": "negative",
+      "sequence": "TCGGTCTTCACATCGGACAGCGCTAAGGAAAAGATA",
+      "score": 0.2487,
+      "details": {
+        "decisive": 0.057,
+        "stable": 0.032,
+        "structured": 0.403,
+        "gc": 1.0,
+        "mfe": -0.4000000059604645,
+        "paired_fraction": 0.111,
+        "gc_fraction": 0.472,
+        "ens_freq_mfe": 0.057,
+        "mfe_structure": ".............((.....)).............."
+      }
+    },
+    {
+      "label": "random1",
+      "class": "negative",
+      "sequence": "CAAAGGATGAATACAGACCTGATAATGCCTGGAGGC",
+      "score": 0.6043,
+      "details": {
+        "decisive": 0.431,
+        "stable": 0.214,
+        "structured": 1.0,
+        "gc": 1.0,
+        "mfe": -2.700000047683716,
+        "paired_fraction": 0.444,
+        "gc_fraction": 0.472,
+        "ens_freq_mfe": 0.431,
+        "mfe_structure": "...(((.((....))..)))......(((....)))"
+      }
+    },
+    {
+      "label": "polyA",
+      "class": "negative",
+      "sequence": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "score": 0.3875,
+      "details": {
+        "decisive": 1.0,
+        "stable": 0.0,
+        "structured": 0.125,
+        "gc": 0.0,
+        "mfe": 0.0,
+        "paired_fraction": 0.0,
+        "gc_fraction": 0.0,
+        "ens_freq_mfe": 1.0,
+        "mfe_structure": "...................................."
+      }
+    }
+  ]
+}
