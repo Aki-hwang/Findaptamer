@@ -45,7 +45,22 @@ def _get(url: str, timeout=60) -> bytes:
 
 
 def fetch_uniprot_fasta(outdir: Path) -> str:
-    """Return the bare sequence (no header, no newlines)."""
+    """Return the bare sequence (no header, no newlines).
+
+    Prefers the vendored copy in the repo (data/mmp9/P14780.fasta), which has
+    been verified against the literature landmarks (707 aa; Cys99; His401/
+    Glu402/His405/His411; Pro421/Tyr423; Phe107). Only hits the network if it
+    is missing, so the pipeline runs on closed networks.
+    """
+    local = outdir / f"{UNIPROT}.fasta"
+    if local.exists():
+        raw = local.read_text()
+        seq = "".join(l.strip() for l in raw.splitlines()
+                      if l and not l.startswith(">"))
+        if seq:
+            print(f"  using vendored {local} ({len(seq)} aa)")
+            return seq
+
     last = None
     for url in UNIPROT_URLS:
         try:
