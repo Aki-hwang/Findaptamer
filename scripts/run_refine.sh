@@ -55,7 +55,7 @@ echo "==> Stage 5: MM/GBSA energy (top $ENERGY_N, ${NS} ns each)"
 if python -c "import openmm" 2>/dev/null; then
   python src/pipeline/energy.py \
     --consensus results/consensus/consensus.json \
-    --top "$ENERGY_N" --ns "$NS" --out results/energy \
+    --top "$ENERGY_N" --ns "$NS" --only-pass --out results/energy \
     || echo "   !! energy stage failed — continuing to the report with consensus only"
 else
   echo "   openmm not installed — skipping. To enable: pip install openmm"

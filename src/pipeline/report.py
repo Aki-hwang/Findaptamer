@@ -63,7 +63,7 @@ def main():
         for rec in energy:
             m = merged.setdefault(rec["sequence"], {})
             m.update({"dG_bind_kcal_mol": rec.get("dG_bind_kcal_mol"),
-                      "dG_sem": rec.get("sem")})
+                      "dG_sem": rec.get("sem_lower_bound", rec.get("sem"))})
 
     if not merged:
         raise SystemExit("no stage outputs found — run the pilot first")

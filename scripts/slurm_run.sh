@@ -11,7 +11,7 @@
 #                                   sacctmgr show assoc format=User,Partition where user=`whoami`)
 #   EMAIL      your@inha.ac.kr     (REQUIRED — only inha.edu / inha.ac.kr accepted)
 #   GPU_TYPE   a6000 | a100 | a40  (default a6000 — 48GB fits the full 337aa receptor)
-#   GPU_N      1..4 (a40: 1..3)    (default 2)
+#   GPU_N      1..4 (a40: 1..3)    (default 1 — scoring is serial)
 #   TIME       D-HH:MM:SS          (default 1-00:00:00 = 1 day; cluster max 7-00:00:00)
 #   MODE       interactive | batch (default interactive)
 #   STAGE      calibrate | pilot | both   (default both)
@@ -27,7 +27,7 @@ cd "$(dirname "$0")/.."
 PARTITION="${PARTITION:-p2}"   # mellab -> p2 (verify: sacctmgr show assoc format=User,Partition user=$(whoami))
 EMAIL="${EMAIL:-aki@inha.ac.kr}"
 GPU_TYPE="${GPU_TYPE:-a6000}"
-GPU_N="${GPU_N:-2}"
+GPU_N="${GPU_N:-1}"   # the pipeline scores serially; a 2nd GPU would sit idle
 TIME="${TIME:-1-00:00:00}"
 MODE="${MODE:-interactive}"
 STAGE="${STAGE:-both}"
@@ -54,8 +54,13 @@ if command -v conda >/dev/null 2>&1 && conda env list | grep -q "^${ENV_NAME:-fi
   source "\$(conda info --base)/etc/profile.d/conda.sh"; conda activate "${ENV_NAME:-findaptamer}"
 elif [ -d .venv ]; then source .venv/bin/activate; fi
 
-if [ ! -s data/mmp9/mmp9_receptor_msa.a3m ] && [ ! -s data/mmp9/mmp9_receptor_msa.csv ]; then
-  echo; echo "=== caching receptor MSA (once; speeds up every later prediction) ==="
+if ! python -c "
+import sys; sys.path.insert(0,'src')
+from pathlib import Path
+from oracle.boltz2 import find_cached_msa
+seq=''.join(l.strip() for l in Path('$RECEPTOR').read_text().splitlines() if not l.startswith('>'))
+sys.exit(0 if find_cached_msa(seq) else 1)" 2>/dev/null; then
+  echo; echo "=== caching receptor MSA (once per receptor; speeds up every later prediction) ==="
   python src/target/make_msa.py --receptor "$RECEPTOR" || \
     echo "   !! MSA caching failed — continuing with --use_msa_server (slower)"
 fi

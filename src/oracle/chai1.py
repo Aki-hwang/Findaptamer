@@ -18,6 +18,7 @@ run fails, it raises.
 from __future__ import annotations
 from dataclasses import dataclass
 import json
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -66,10 +67,15 @@ class Chai1Oracle(Oracle):
         root.mkdir(parents=True, exist_ok=True)
         fasta = root / "input.fasta"
         write_chai_fasta(fasta, cfg.receptor_sequence, sequence)
+        # chai_lab asserts its output_dir is empty (and must create it itself), so
+        # the input file cannot live there. Point it at a fresh subdirectory.
+        out = root / "chai_out"
+        if out.exists():
+            shutil.rmtree(out, ignore_errors=True)
 
         candidates = run_inference(
             fasta_file=fasta,
-            output_dir=root,
+            output_dir=out,
             num_trunk_recycles=cfg.num_trunk_recycles,
             num_diffn_timesteps=cfg.num_diffn_timesteps,
             seed=cfg.seed,
@@ -78,6 +84,13 @@ class Chai1Oracle(Oracle):
         )
 
         # ranking data carries aggregate + per-chain-pair scores
+        # run_inference returns the diffusion samples UNSORTED; .sorted() puts the
+        # best first, otherwise we would score sample 0 rather than the best pose.
+        try:
+            candidates = candidates.sorted()
+        except Exception:
+            pass
+
         best_iptm, details = 0.0, {}
         try:
             scores = candidates.ranking_data[0]
@@ -87,14 +100,21 @@ class Chai1Oracle(Oracle):
             details = {"aggregate_score": float(agg) if agg is not None else None,
                        "interface_ptm": best_iptm}
         except Exception:
-            # fall back to the scores json Chai writes alongside the structures
-            for js in sorted(root.rglob("scores*.json")):
-                d = json.loads(js.read_text())
-                best_iptm = float(d.get("iptm") or d.get("interface_ptm") or 0.0)
-                details = d
-                break
+            # Chai writes scores as .npz (np.savez), never .json — read that.
+            import numpy as np
+            npz = sorted(out.rglob("scores*.npz"))
+            if not npz:
+                raise RuntimeError(
+                    f"Chai-1 produced no readable score for {out}; refusing to "
+                    "report 0.0 as if it were a measurement.")
+            d = dict(np.load(npz[0], allow_pickle=True))
+            for key in ("interface_ptm", "iptm", "aggregate_score"):
+                if key in d:
+                    best_iptm = float(np.ravel(d[key])[0])
+                    break
+            details = {k: str(v) for k, v in d.items()}
 
-        cif = sorted(root.rglob("*.cif"))
+        cif = sorted(out.rglob("*.cif"))
         if cif:
             details["structure"] = str(cif[0])
         return OracleScore(value=max(0.0, min(1.0, best_iptm)),

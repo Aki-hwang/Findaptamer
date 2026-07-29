@@ -132,7 +132,8 @@ def run(args):
     # ---- resume from checkpoint (Slurm allocations are time-boxed) ---------
     ckpt = outdir / "checkpoint.json"
     weights = [1.0] * len(pool)
-    seen: dict[str, dict] = {}
+    seen: dict[str, dict] = {}      # scored only
+    attempted: set[str] = set()     # sampled this run (incl. prefilter drops)
     history = []
     start_round = 1
     if args.resume and ckpt.exists():
@@ -142,8 +143,9 @@ def run(args):
             seen = state.get("seen", {})
             history = state.get("history", [])
             start_round = state.get("next_round", 1)
+            attempted = set(state.get("attempted", [])) | set(seen)
             print(f"resumed from {ckpt}: round {start_round}, "
-                  f"{len(seen)} sequences already scored\n")
+                  f"{sum(1 for v in seen.values() if v)} sequences already scored\n")
         else:
             print(f"!! checkpoint pool size mismatch — starting fresh\n")
 
@@ -152,6 +154,7 @@ def run(args):
     def save_ckpt(next_round):
         ckpt.write_text(json.dumps(
             {"weights": weights, "seen": seen, "history": history,
+             "attempted": sorted(attempted),
              "next_round": next_round, "pool_size": len(pool)},
             default=str))
 
@@ -167,10 +170,12 @@ def run(args):
             if not res:
                 continue
             flat = res[0].replace("&", "")
-            if flat in seen:
+            if flat in attempted:
                 continue
+            # only mark as attempted; a candidate dropped by the cheap prefilter
+            # must stay eligible for a later round, when the weights have moved
+            attempted.add(flat)
             cands.append(res)
-            seen[flat] = {}
         if not cands:
             print(f"round {r}: no new candidates; stopping")
             break

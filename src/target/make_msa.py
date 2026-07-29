@@ -21,12 +21,11 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from oracle.boltz2 import Boltz2Config, _write_yaml  # noqa: E402
+from oracle.boltz2 import Boltz2Config, _write_yaml, msa_cache_base  # noqa: E402
 
 # Boltz accepts .a3m or .csv alignments; it writes them under the run directory.
 MSA_PATTERNS = ("*.a3m", "msa/*.csv", "**/msa/*.csv", "**/*.a3m")
 
-DEFAULT_CACHE = "data/mmp9/mmp9_receptor_msa"
 
 
 def read_fasta(path: str) -> str:
@@ -48,8 +47,10 @@ def find_msa(root: Path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--receptor", default="data/mmp9/mmp9_receptor.fasta")
-    ap.add_argument("--cache", default=DEFAULT_CACHE,
-                    help="output path WITHOUT extension; the real suffix is kept")
+    ap.add_argument("--cache", default=None,
+                    help="output path WITHOUT extension (default: keyed to the "
+                         "receptor sequence so a domain switch cannot reuse the "
+                         "wrong alignment)")
     ap.add_argument("--probe-dna", default="ACGTACGTACGT",
                     help="short throwaway DNA used for the one seeding run")
     ap.add_argument("--keep-workdir", action="store_true")
@@ -82,7 +83,8 @@ def main():
             "Boltz2Config(precomputed_msa=...). Falling back to --use_msa_server\n"
             "still works, just slower.")
 
-    dest = Path(f"{args.cache}{msa.suffix}")
+    base = args.cache or str(msa_cache_base(receptor))
+    dest = Path(f"{base}{msa.suffix}")
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(msa, dest)
     size_kb = dest.stat().st_size / 1024

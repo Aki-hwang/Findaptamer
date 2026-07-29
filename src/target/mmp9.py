@@ -126,6 +126,51 @@ BENCHMARK_APTAMERS = [
 ]
 
 
+# ---- receptor slicing: the single source of truth for local->UniProt mapping --
+# A sliced receptor is renumbered 1..N by every structure predictor, but the
+# epitope/FnII definitions above use UniProt numbering. For a CONTIGUOUS slice a
+# scalar offset suffices; for the FnII-removed construct the slice is
+# discontiguous, so only an explicit index list is correct. Getting this wrong
+# silently inverts fnII_fraction, the activation-risk metric.
+DOMAIN_SPECS = {
+    "full":           [(1, LENGTH_AA)],
+    "catalytic":      [DOMAINS["catalytic_domain"]],
+    "catalytic_nofn": [(DOMAINS["catalytic_domain"][0], DOMAINS["fnII_inserts"][0] - 1),
+                       (DOMAINS["fnII_inserts"][1] + 1, DOMAINS["catalytic_domain"][1])],
+}
+
+
+def spec_string(domain: str) -> str:
+    """Compact, parseable range spec for a FASTA header, e.g. '107-215+391-443'."""
+    return "+".join(f"{a}-{b}" for a, b in DOMAIN_SPECS[domain])
+
+
+def parse_spec(spec: str):
+    """Inverse of spec_string. Returns [(start, end), ...] or [] if unparseable."""
+    out = []
+    for part in spec.split("+"):
+        if "-" not in part:
+            return []
+        a, b = part.split("-", 1)
+        if not (a.isdigit() and b.isdigit()):
+            return []
+        out.append((int(a), int(b)))
+    return out
+
+
+def local_to_uniprot(ranges):
+    """0-based local index -> UniProt residue number, for the given ranges."""
+    nums = []
+    for a, b in ranges:
+        nums.extend(range(a, b + 1))
+    return nums
+
+
+def slice_sequence(seq: str, domain: str) -> str:
+    ranges = DOMAIN_SPECS[domain]
+    return "".join(seq[a - 1:b] for a, b in ranges)
+
+
 def summary() -> dict:
     return {
         "uniprot": UNIPROT,

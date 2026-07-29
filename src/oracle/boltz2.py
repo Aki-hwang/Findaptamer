@@ -22,6 +22,7 @@ if boltz is unavailable, so it never silently fabricates a score.
 """
 from __future__ import annotations
 from dataclasses import dataclass
+import hashlib
 import json
 import shutil
 import subprocess
@@ -44,17 +45,29 @@ class Boltz2Config:
     out_root: str | None = None     # where boltz writes; temp dir if None
     boltz_bin: str = "boltz"
     extra_args: tuple = ()
+    keep_outputs: bool = False   # keep auto-created temp dirs (debugging)
 
 
-DEFAULT_MSA_CACHE = "data/mmp9/mmp9_receptor_msa"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+MSA_CACHE_DIR = REPO_ROOT / "data" / "mmp9"
 
 
-def find_cached_msa(base: str = DEFAULT_MSA_CACHE):
-    """Return a cached receptor alignment (.a3m/.csv) if one exists.
+def msa_cache_base(receptor_sequence: str) -> Path:
+    """Cache path keyed to the receptor SEQUENCE.
 
-    Generated once by src/target/make_msa.py. Reusing it removes the per-call
-    MSA-server round trip, which otherwise dominates runtime in the closed loop.
+    A single fixed filename would hand a 337-aa alignment to a 162-aa receptor
+    when the domain is switched, with nothing detecting the mismatch. Resolving
+    from the repo root (not the CWD) also keeps the cache usable when the
+    pipeline is invoked from elsewhere — otherwise every prediction silently
+    re-queries the public MSA server.
     """
+    h = hashlib.sha1(receptor_sequence.encode()).hexdigest()[:10]
+    return MSA_CACHE_DIR / f"msa_{h}"
+
+
+def find_cached_msa(receptor_sequence: str):
+    """Return a cached alignment for THIS receptor, if one exists."""
+    base = msa_cache_base(receptor_sequence)
     for ext in (".a3m", ".csv"):
         p = Path(f"{base}{ext}")
         if p.exists() and p.stat().st_size > 0:
@@ -75,18 +88,27 @@ def _write_yaml(path: Path, cfg: Boltz2Config, aptamer_seq: str):
     path.write_text("\n".join(lines) + "\n")
 
 
-def _find_confidence_json(out_dir: Path):
-    hits = list(out_dir.rglob("confidence_*_model_0.json"))
-    if not hits:
-        hits = list(out_dir.rglob("confidence_*.json"))
-    return hits[0] if hits else None
+def _find_confidence_json(out_dir: Path, stem: str | None = None):
+    """Locate the confidence JSON for a specific prediction.
+
+    Matching on `stem` matters: boltz names outputs after the input file, and a
+    directory may hold results for several inputs. Returning the wrong file
+    would attribute another sequence's score to this candidate.
+    """
+    pats = ([f"confidence_{stem}_model_0.json", f"confidence_{stem}*.json"]
+            if stem else []) + ["confidence_*_model_0.json", "confidence_*.json"]
+    for pat in pats:
+        hits = sorted(out_dir.rglob(pat))
+        if hits:
+            return hits[0]
+    return None
 
 
 class Boltz2Oracle(Oracle):
     def __init__(self, config: Boltz2Config):
         self.cfg = config
         if config.precomputed_msa is None:
-            cached = find_cached_msa()
+            cached = find_cached_msa(config.receptor_sequence)
             if cached:
                 self.cfg.precomputed_msa = cached
         if shutil.which(config.boltz_bin) is None:
@@ -140,29 +162,48 @@ class Boltz2Oracle(Oracle):
 
     def score(self, sequence: str) -> OracleScore:
         cfg = self.cfg
+        auto_dir = cfg.out_root is None
         root = Path(cfg.out_root) if cfg.out_root else Path(tempfile.mkdtemp(prefix="boltz_"))
         root.mkdir(parents=True, exist_ok=True)
-        yaml_path = root / "input.yaml"
+
+        # Name the input after the sequence. Boltz records completed inputs by
+        # file stem and SKIPS anything already processed in the same --out_dir
+        # ("All inputs are already processed."), exiting 0 without predicting.
+        # With a fixed name like input.yaml a re-run into a reused directory
+        # would silently return the PREVIOUS sequence's score and structure.
+        stem = "apt_" + hashlib.sha1(sequence.replace("&", "").encode()).hexdigest()[:12]
+        yaml_path = root / f"{stem}.yaml"
         _write_yaml(yaml_path, cfg, sequence)
 
         cmd = [cfg.boltz_bin, "predict", str(yaml_path),
                "--out_dir", str(root), "--devices", str(cfg.devices),
-               "--output_format", "pdb"]
+               "--output_format", "pdb", "--override"]
         if cfg.use_msa_server and not cfg.precomputed_msa:
             cmd.append("--use_msa_server")
         cmd.extend(cfg.extra_args)
 
-        proc = subprocess.run(cmd, capture_output=True, text=True)
-        if proc.returncode != 0:
-            raise RuntimeError(f"boltz predict failed:\n{proc.stderr[-2000:]}")
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.returncode != 0:
+                raise RuntimeError(f"boltz predict failed:\n{proc.stderr[-2000:]}")
 
-        conf_json = _find_confidence_json(root)
-        if conf_json is None:
-            raise RuntimeError(f"No Boltz confidence JSON under {root}")
-        conf = json.loads(conf_json.read_text())
-        value, details = self._binding_score(conf)
-        details["confidence_json"] = str(conf_json)
-        return OracleScore(value=round(value, 4), kind="boltz2_interface", details=details)
+            conf_json = _find_confidence_json(root, stem)
+            if conf_json is None:
+                raise RuntimeError(f"No Boltz confidence JSON for {stem} under {root}")
+            conf = json.loads(conf_json.read_text())
+            value, details = self._binding_score(conf)
+            details["confidence_json"] = str(conf_json)
+            details["stem"] = stem
+            struct = sorted(root.rglob(f"*{stem}*.pdb")) or sorted(root.rglob("*.pdb"))
+            details["structure"] = str(struct[0]) if struct else None
+            return OracleScore(value=round(value, 4), kind="boltz2_interface",
+                               details=details)
+        finally:
+            # A per-call temp tree holds the MSA, .npz tensors and Lightning logs;
+            # a full pilot makes hundreds of them and would fill /tmp on a
+            # compute node. Only clean up dirs we created ourselves.
+            if auto_dir and cfg.keep_outputs is False:
+                shutil.rmtree(root, ignore_errors=True)
 
 
 if __name__ == "__main__":

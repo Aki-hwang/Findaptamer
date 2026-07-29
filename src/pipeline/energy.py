@@ -113,7 +113,8 @@ def potential_energy(modeller, system, positions=None):
 
 
 def mmgbsa_single_structure(complex_pdb: str, work: Path, ns: float = 0.5,
-                            snapshots: int = 20, minimize_steps: int = 2000):
+                            snapshots: int = 20, minimize_steps: int = 2000,
+                            equilibrate_steps: int = 25000):
     """Minimize + short implicit-solvent MD, then single-trajectory MM/GBSA."""
     from openmm import LangevinMiddleIntegrator
     from openmm.app import ForceField, Simulation, PDBFile, Modeller, NoCutoff, HBonds
@@ -121,14 +122,22 @@ def mmgbsa_single_structure(complex_pdb: str, work: Path, ns: float = 0.5,
 
     ff = ForceField("amber14-all.xml", "implicit/gbn2.xml")
 
-    pdb = PDBFile(str(complex_pdb))
-    modeller = Modeller(pdb.topology, pdb.positions)
     try:
+        # Chai-1 emits mmCIF, Boltz emits PDB — accept either.
+        if str(complex_pdb).lower().endswith((".cif", ".mmcif")):
+            from openmm.app import PDBxFile
+            struct = PDBxFile(str(complex_pdb))
+        else:
+            struct = PDBFile(str(complex_pdb))
+        modeller = Modeller(struct.topology, struct.positions)
         modeller.addHydrogens(ff)
         system = ff.createSystem(modeller.topology, nonbondedMethod=NoCutoff,
                                  constraints=HBonds)
     except Exception as e:
-        names = sorted({r.name.strip() for r in modeller.topology.residues()})
+        try:
+            names = sorted({r.name.strip() for r in modeller.topology.residues()})
+        except Exception:
+            names = "<could not read structure>"
         raise RuntimeError(
             f"Amber14/GBn2 could not parametrize {complex_pdb}: {e}\n"
             f"Residue names present: {names}\n"
@@ -141,6 +150,10 @@ def mmgbsa_single_structure(complex_pdb: str, work: Path, ns: float = 0.5,
     sim = Simulation(modeller.topology, system, integ)
     sim.context.setPositions(modeller.positions)
     sim.minimizeEnergy(maxIterations=minimize_steps)
+    # MD from a minimized structure with zero velocities is not equilibrated;
+    # assign a Maxwell-Boltzmann distribution and discard a short warm-up.
+    sim.context.setVelocitiesToTemperature(300 * unit.kelvin)
+    sim.step(equilibrate_steps)
 
     total_steps = max(snapshots, int(ns * 1000 / 0.002))   # ns -> 2 fs steps
     stride = max(1, total_steps // snapshots)
@@ -196,21 +209,50 @@ def mmgbsa_single_structure(complex_pdb: str, work: Path, ns: float = 0.5,
     n = len(dGs)
     mean = sum(dGs) / n
     var = sum((x - mean) ** 2 for x in dGs) / (n - 1) if n > 1 else 0.0
+    # Snapshots this close together in implicit solvent are correlated, so the
+    # naive sem understates the true uncertainty. Report the sample sd too and
+    # label the sem as a lower bound rather than implying independence.
+    sd = math.sqrt(var) if n > 1 else 0.0
     return {"dG_bind_kcal_mol": round(mean, 2),
-            "sem": round(math.sqrt(var / n), 2) if n > 1 else 0.0,
-            "n_snapshots": n}
+            "sd": round(sd, 2),
+            "sem_lower_bound": round(sd / math.sqrt(n), 2) if n > 1 else 0.0,
+            "n_snapshots": n,
+            "note": "correlated snapshots; sem is a lower bound, and entropy is "
+                    "neglected — use for RANKING only"}
 
 
 def pick_structure(rec: dict) -> str | None:
-    """Best available predicted complex for a consensus record."""
+    """Pick the predicted complex that best REPRESENTS the consensus.
+
+    Taking the single highest-confidence prediction would undo Stage 4: that is
+    the most optimistic pose, not the reproducible one. Prefer the prediction
+    whose contact set best matches the consensus (majority) contacts; fall back
+    to the highest score only when contacts cannot be computed.
+    """
     per = rec.get("per_predictor", {})
-    best, best_score = None, -1.0
-    for name, d in per.items():
-        s = d.get("score", -1)
-        st = d.get("structure")
-        if st and Path(st).exists() and s > best_score:
-            best, best_score = st, s
-    return best
+    stable = set(rec.get("stable_contacts_uniprot") or [])
+    cands = [(n, d) for n, d in per.items()
+             if d.get("structure") and Path(d["structure"]).exists()]
+    if not cands:
+        return None
+    if stable:
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+            from pipeline.consensus import contact_residues, residue_map, jaccard
+            resmap = rec.get("_resmap")
+            best, best_j = None, -1.0
+            for _, d in cands:
+                cset, _, _ = contact_residues(d["structure"])
+                uni = ({resmap[c - 1] for c in cset if 1 <= c <= len(resmap)}
+                       if resmap else cset)
+                j = jaccard(uni, stable)
+                if j > best_j:
+                    best, best_j = d["structure"], j
+            if best is not None:
+                return best
+        except Exception:
+            pass
+    return max(cands, key=lambda kv: kv[1].get("score", -1))[1]["structure"]
 
 
 def main():
@@ -262,11 +304,12 @@ def main():
     (outdir / "energy.json").write_text(json.dumps(rows, indent=2, default=str))
     with open(outdir / "energy_ranked.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["rank", "sequence", "length", "dG_bind_kcal_mol", "sem",
-                    "consensus_score", "contact_jaccard"])
+        w.writerow(["rank", "sequence", "length", "dG_bind_kcal_mol",
+                    "sem_lower_bound", "sd", "consensus_score", "contact_jaccard"])
         for k, r in enumerate(rows, 1):
             w.writerow([k, r["sequence"], r["length"], r["dG_bind_kcal_mol"],
-                        r["sem"], r["consensus_score"], r["contact_jaccard"]])
+                        r["sem_lower_bound"], r["sd"], r["consensus_score"],
+                        r["contact_jaccard"]])
 
     print(f"\nRanked by dG -> {outdir}/energy_ranked.csv")
     print("NOTE: MM/GBSA without entropy is a RANKING signal, not a predicted Kd.")

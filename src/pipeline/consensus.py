@@ -39,7 +39,8 @@ from itertools import combinations
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from target.mmp9 import DOMAINS, EPITOPES  # noqa: E402
+from target.mmp9 import (DOMAINS, EPITOPES, DOMAIN_SPECS,  # noqa: E402
+                         parse_spec, local_to_uniprot)
 
 # residue-level contact cutoff between an aptamer atom and a receptor atom
 CONTACT_CUTOFF_A = 5.0
@@ -116,21 +117,40 @@ def jaccard(a: set, b: set) -> float:
 # receptor numbering: predictions are 1..N over the sliced receptor, but the
 # epitope definitions use UniProt numbering. Map with the slice offset.
 # ---------------------------------------------------------------------------
-def slice_offset(receptor_fasta: str) -> int:
-    """First UniProt residue number of the receptor slice (from its header)."""
-    header = Path(receptor_fasta).read_text().splitlines()[0]
-    # e.g. ">MMP9_catalytic_107-443"
-    for tok in header.replace(">", "").split("_"):
-        if "-" in tok:
-            a, b = tok.split("-", 1)
-            if a.isdigit() and b.isdigit():
-                return int(a)
-    return DOMAINS["catalytic_domain"][0]
+def residue_map(receptor_fasta: str):
+    """0-based local residue index -> UniProt residue number.
+
+    The predictors renumber the sliced receptor 1..N, but every epitope and the
+    FnII counter-selection zone are defined in UniProt numbering. A scalar offset
+    is only valid for a CONTIGUOUS slice; the FnII-removed construct is
+    discontiguous, and using an offset there reports catalytic-domain contacts as
+    FnII contacts — exactly inverting the activation-risk metric. So we read the
+    explicit range spec written into the FASTA header by fetch_receptor.py
+    (e.g. '>MMP9_catalytic_nofn|107-215+391-443') and build the real index list.
+    """
+    header = Path(receptor_fasta).read_text().splitlines()[0].lstrip(">")
+    spec = header.split("|", 1)[1] if "|" in header else ""
+    ranges = parse_spec(spec) if spec else []
+    if not ranges:
+        # legacy header without a spec: fall back to the domain named in it
+        for name, rng in DOMAIN_SPECS.items():
+            if name in header:
+                ranges = rng
+                break
+    if not ranges:
+        ranges = DOMAIN_SPECS["catalytic"]
+        print(f"  ! {receptor_fasta}: no range spec in header; assuming "
+              f"catalytic {ranges}. Re-run fetch_receptor.py to embed it.")
+    return local_to_uniprot(ranges)
 
 
-def epitope_stats(contacts_local: set, offset: int, epitope_key: str | None):
-    """Translate local numbering to UniProt and measure epitope / FnII overlap."""
-    uni = {c + offset - 1 for c in contacts_local}
+def epitope_stats(contacts_local: set, resmap, epitope_key: str | None):
+    """Translate local numbering to UniProt and measure epitope / FnII overlap.
+
+    `contacts_local` are 1-based residue numbers as emitted by the predictor;
+    `resmap[i]` is the UniProt number of the (i+1)-th receptor residue.
+    """
+    uni = {resmap[c - 1] for c in contacts_local if 1 <= c <= len(resmap)}
     fa, fb = DOMAINS["fnII_inserts"]
     fn_hits = sum(1 for r in uni if fa <= r <= fb)
     out = {"n_contacts": len(uni),
@@ -165,13 +185,9 @@ def build_predictors(receptor_seq: str, seeds: int, use_chai: bool, outroot: Pat
                                    out_root=str(workdir),
                                    extra_args=("--seed", str(seed)))
                 sc = Boltz2Oracle(cfg).score(seq)
-                struct = None
-                for pat in ("*.pdb", "*.cif"):
-                    hits = sorted(Path(workdir).rglob(pat))
-                    if hits:
-                        struct = str(hits[0])
-                        break
-                return sc.value, struct, sc.details
+                # trust the oracle's stem-matched path; a bare rglob of a reused
+                # workdir can pick up a different candidate's structure
+                return sc.value, sc.details.get("structure"), sc.details
             return run
         preds.append((f"boltz2_seed{s}", make()))
 
@@ -205,14 +221,19 @@ def main():
 
     receptor_seq = "".join(l.strip() for l in Path(args.receptor).read_text().splitlines()
                            if l and not l.startswith(">"))
-    offset = slice_offset(args.receptor)
+    resmap = residue_map(args.receptor)
     outdir = Path(args.out)
     outdir.mkdir(parents=True, exist_ok=True)
 
     cands = read_candidates(args.candidates, args.top)
     predictors = build_predictors(receptor_seq, args.seeds, args.use_chai, outdir)
+    if len(resmap) != len(receptor_seq):
+        raise SystemExit(
+            f"receptor length {len(receptor_seq)} != residue map {len(resmap)}; "
+            f"the header range spec in {args.receptor} does not match the sequence. "
+            "Re-run: python src/target/fetch_receptor.py --domain <domain>")
     print(f"{len(cands)} candidates x {len(predictors)} predictions "
-          f"(receptor {len(receptor_seq)} aa, UniProt offset {offset})\n")
+          f"(receptor {len(receptor_seq)} aa, UniProt {resmap[0]}-{resmap[-1]})\n")
 
     results = []
     for i, (seq, pilot_score) in enumerate(cands, 1):
@@ -253,7 +274,7 @@ def main():
             allres = set().union(*contact_sets)
             stable = {r for r in allres
                       if sum(1 for cs in contact_sets if r in cs) >= need}
-        est = epitope_stats(stable, offset, args.epitope)
+        est = epitope_stats(stable, resmap, args.epitope)
 
         # consensus score: confidence AND agreement must both hold
         consensus = mean * (0.5 + 0.5 * jac)
@@ -265,7 +286,8 @@ def main():
                "n_predictions": len(scores),
                "contact_jaccard": round(jac, 3),
                "consensus_score": round(consensus, 4),
-               "stable_contacts_uniprot": sorted(r + offset - 1 for r in stable),
+               "stable_contacts_uniprot": sorted(resmap[r - 1] for r in stable
+                                                 if 1 <= r <= len(resmap)),
                **est, "pass": passed, "per_predictor": per_pred}
         results.append(rec)
         flag = "PASS" if passed else "    "

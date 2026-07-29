@@ -25,7 +25,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from target.mmp9 import DOMAINS, UNIPROT  # noqa: E402
+from target.mmp9 import DOMAINS, UNIPROT, DOMAIN_SPECS, spec_string, slice_sequence  # noqa: E402
 
 UNIPROT_URLS = [
     f"https://rest.uniprot.org/uniprotkb/{UNIPROT}.fasta",
@@ -97,17 +97,10 @@ def fetch_pdb(pdb_id: str, outdir: Path):
 
 
 def slice_domain(seq: str, domain: str) -> str:
-    """Slice by UniProt numbering (1-based, inclusive)."""
-    if domain == "catalytic":
-        a, b = DOMAINS["catalytic_domain"]
-        return seq[a - 1:b]
-    if domain == "catalytic_nofn":
-        ca, cb = DOMAINS["catalytic_domain"]
-        fa, fb = DOMAINS["fnII_inserts"]
-        return seq[ca - 1:fa - 1] + seq[fb:cb]
-    if domain == "full":
-        return seq
-    raise ValueError(f"unknown domain: {domain}")
+    """Slice by UniProt numbering using the shared DOMAIN_SPECS definition."""
+    if domain not in DOMAIN_SPECS:
+        raise ValueError(f"unknown domain: {domain}")
+    return slice_sequence(seq, domain)
 
 
 def main():
@@ -130,7 +123,9 @@ def main():
 
     dom = slice_domain(seq, args.domain)
     out_fa = outdir / "mmp9_receptor.fasta"
-    out_fa.write_text(f">MMP9_{args.domain}\n{dom}\n")
+    # the range spec is REQUIRED downstream to map predicted residue
+    # numbers back to UniProt numbering (see consensus.epitope_stats)
+    out_fa.write_text(f">MMP9_{args.domain}|{spec_string(args.domain)}\n{dom}\n")
     print(f"  {args.domain}: {len(dom)} aa -> {out_fa}")
 
     for pdb in args.pdb:
