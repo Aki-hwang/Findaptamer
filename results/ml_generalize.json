@@ -1,0 +1,29 @@
+{
+  "n_pairs": 2900,
+  "n_positive": 725,
+  "n_aptamers": 709,
+  "n_proteins": 144,
+  "mmp9_in_corpus": false,
+  "splits": {
+    "random": {
+      "auroc": 0.7626,
+      "sd": 0.0173,
+      "folds": 5
+    },
+    "aptamer_grouped": {
+      "auroc": 0.8323,
+      "sd": 0.035,
+      "folds": 5
+    },
+    "protein_grouped": {
+      "auroc": 0.2097,
+      "sd": 0.0352,
+      "folds": 5
+    }
+  },
+  "auroc_novel_protein": 0.2097,
+  "gap_random_minus_novel": 0.5529,
+  "generalises": false,
+  "verdict": "DOES NOT GENERALISE to a novel protein: AUROC 0.210 on held-out proteins against 0.763 on a random split. MMP-9 is absent from this corpus, so an in-silico SELEX driven by this model would be ranking 40-mers by something other than MMP-9 binding. The corpus has only ~144 distinct proteins, which is the likely cause -- this is a data limitation, not a modelling bug.",
+  "source": "github.com/pnumlb/AptaTrans dataset_li.pickle"
+}
