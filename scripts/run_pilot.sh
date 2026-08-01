@@ -24,14 +24,28 @@ RESUME="${RESUME:-1}"          # 1 = continue from checkpoint; 0 = fresh start
 MAX_HOURS="${MAX_HOURS:-0}"    # stop+checkpoint before the Slurm --time expires
 CALIB="${CALIB:-results/calibration.json}"
 
-# activate the env created by setup_login.sh
-if command -v conda >/dev/null 2>&1 && conda env list | grep -q "^${ENV_NAME:-findaptamer} "; then
-  # shellcheck disable=SC1091
-  source "$(conda info --base)/etc/profile.d/conda.sh"; conda activate "${ENV_NAME:-findaptamer}"
-elif [ -d .venv ]; then
-  # shellcheck disable=SC1091
-  source .venv/bin/activate
-fi
+# --- environment activation -------------------------------------------------
+# Compute nodes start a fresh non-interactive shell where conda is not on PATH,
+# so `command -v conda` fails and a naive .venv fallback aborts the run under
+# `set -e`. Source the conda hook from its install location instead.
+activate_env() {
+  local name="${ENV_NAME:-findaptamer}" base
+  for base in "${CONDA_HOME:-$HOME/miniconda3}" "$HOME/anaconda3" "$HOME/miniforge3" "/opt/conda"; do
+    if [ -f "$base/etc/profile.d/conda.sh" ]; then
+      # shellcheck disable=SC1091
+      . "$base/etc/profile.d/conda.sh"
+      if conda activate "$name" 2>/dev/null; then
+        echo "env: conda $name ($base)"; return 0
+      fi
+    fi
+  done
+  if [ -f .venv/bin/activate ]; then
+    # shellcheck disable=SC1091
+    . .venv/bin/activate; echo "env: .venv"; return 0
+  fi
+  echo "!! could not activate '$name' — run scripts/setup_login.sh first"; return 1
+}
+activate_env || exit 1
 
 echo "==> preflight"
 [ -f "$RECEPTOR" ] || { echo "!! missing $RECEPTOR — run: python src/target/fetch_receptor.py"; exit 1; }

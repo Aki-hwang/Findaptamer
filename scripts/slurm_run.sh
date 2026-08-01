@@ -50,9 +50,31 @@ cd "\$SLURM_SUBMIT_DIR"
 echo "=== node: \$(hostname) ==="
 nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
 
-if command -v conda >/dev/null 2>&1 && conda env list | grep -q "^${ENV_NAME:-findaptamer} "; then
-  source "\$(conda info --base)/etc/profile.d/conda.sh"; conda activate "${ENV_NAME:-findaptamer}"
-elif [ -d .venv ]; then source .venv/bin/activate; fi
+# A compute node starts a fresh non-interactive shell, so conda is NOT on PATH
+# even though setup_login.sh installed it — the previous check fell through to a
+# .venv that does not exist and killed the job at the first line under set -e.
+# Source the conda hook from its known location instead of relying on PATH.
+_activated=0
+for _base in "\${CONDA_HOME:-\$HOME/miniconda3}" "\$HOME/anaconda3" "\$HOME/miniforge3" "/opt/conda"; do
+  if [ -f "\$_base/etc/profile.d/conda.sh" ]; then
+    # shellcheck disable=SC1091
+    . "\$_base/etc/profile.d/conda.sh"
+    if conda activate "${ENV_NAME:-findaptamer}" 2>/dev/null; then
+      _activated=1; echo "env: conda ${ENV_NAME:-findaptamer} (\$_base)"; break
+    fi
+  fi
+done
+if [ "\$_activated" = "0" ] && [ -f .venv/bin/activate ]; then
+  # shellcheck disable=SC1091
+  . .venv/bin/activate; _activated=1; echo "env: .venv"
+fi
+if [ "\$_activated" = "0" ]; then
+  echo "!! could not activate the '${ENV_NAME:-findaptamer}' environment."
+  echo "   Run scripts/setup_login.sh on the login node first."
+  exit 1
+fi
+echo "python: \$(command -v python)"
+command -v boltz >/dev/null || { echo "!! boltz not on PATH in this env"; exit 1; }
 
 if ! python -c "
 import sys; sys.path.insert(0,'src')
