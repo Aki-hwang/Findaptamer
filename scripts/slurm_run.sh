@@ -24,6 +24,9 @@
 #   SEEDS      predictions per sequence in calibration (default 3;
 #              use 1 for a fast first check — 13 calls instead of 39)
 #   NNEG       negative controls in calibration (default 12)
+#   ANCHOR     which positive anchors calibration (default: highest
+#              confidence = MMP9-DNA-30, unmodified DNA). ANCHOR=F3B
+#              reproduces the original modified-RNA run.
 #
 # Cluster policy notes honored here:
 #   * installs/downloads happen on the login node (scripts/setup_login.sh), so the
@@ -103,8 +106,17 @@ fi
 
 if [ "$STAGE" = "calibrate" ] || [ "$STAGE" = "both" ]; then
   echo; echo "=== oracle calibration (gate) ==="
+  # The run that failed co-folding (docs/06) was anchored on F3B, which is a
+  # 2'-F/2'-OMe modified RNA whose binding site on MMP-9 is unmapped -- so a
+  # FAIL there conflated "cannot predict binding" with "cannot model a modified
+  # RNA" and "wrong domain". calibrate.py now defaults to the highest-confidence
+  # positive, MMP9-DNA-30: unmodified DNA, reused unchanged by three independent
+  # groups. Re-running the gate against it is the one test that can legitimately
+  # reopen the co-folding question. Override with ANCHOR=F3B to reproduce the
+  # original run.
   python src/oracle/calibrate.py --receptor "$RECEPTOR" \
-    --seeds $SEEDS --n-negatives $NNEG --out results/calibration.json
+    --seeds $SEEDS --n-negatives $NNEG \
+    ${ANCHOR:+--anchor "$ANCHOR"} --out results/calibration.json
 fi
 if [ "$STAGE" = "pose" ]; then
   echo; echo "=== pose-reproducibility calibration ==="
