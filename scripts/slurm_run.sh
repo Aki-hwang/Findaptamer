@@ -14,7 +14,10 @@
 #   GPU_N      1..4 (a40: 1..3)    (default 1 — scoring is serial)
 #   TIME       D-HH:MM:SS          (default 1-00:00:00 = 1 day; cluster max 7-00:00:00)
 #   MODE       interactive | batch (default interactive)
-#   STAGE      calibrate | pose | pilot | both   (default both)
+#   STAGE      calibrate | pose | control | pilot | both  (default both)
+#              control = canonical protein-DNA positive control
+#              (Zif268/1AAY) — tells you whether a failed aptamer
+#              calibration means the model or the setup
 #              pose = pose-reproducibility calibration (see
 #              docs/06_calibration_result_ko.md); needed because the
 #              scalar ipTM proved too noisy to rank candidates
@@ -107,6 +110,11 @@ if [ "$STAGE" = "pose" ]; then
   echo; echo "=== pose-reproducibility calibration ==="
   python src/oracle/calibrate_pose.py --receptor "$RECEPTOR" \
     --seeds $SEEDS --n-negatives $NNEG --out results/calibration_pose.json
+fi
+if [ "$STAGE" = "control" ]; then
+  echo; echo "=== canonical protein-DNA control (Zif268 / 1AAY) ==="
+  python src/oracle/control_canonical.py --seeds $SEEDS \
+    --out results/control_1aay.json
 fi
 if [ "$STAGE" = "pilot" ] || [ "$STAGE" = "both" ]; then
   echo; echo "=== closed-loop design ==="
