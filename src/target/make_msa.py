@@ -21,7 +21,8 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from oracle.boltz2 import Boltz2Config, _write_yaml, msa_cache_base  # noqa: E402
+from oracle.boltz2 import (Boltz2Config, _write_yaml,  # noqa: E402
+                           msa_cache_base, kernels_available)
 
 # Boltz's YAML `msa:` field takes an .a3m or .csv alignment. Which of those it
 # leaves on disk (and where) varies by version, so search the whole run tree by
@@ -85,6 +86,10 @@ def main():
     import subprocess
     cmd = [cfg.boltz_bin, "predict", str(yaml_path), "--out_dir", str(work),
            "--use_msa_server", "--devices", "1", "--output_format", "pdb"]
+    if not kernels_available():
+        cmd.append("--no_kernels")
+        print("  cuequivariance_torch not installed -> running with --no_kernels",
+              flush=True)
     print("running one seeding prediction to build the MSA ...\n"
           "  (this queries the MSA server and can take several minutes)",
           flush=True)

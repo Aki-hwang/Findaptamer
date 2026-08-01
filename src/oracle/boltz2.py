@@ -47,6 +47,20 @@ class Boltz2Config:
     boltz_bin: str = "boltz"
     extra_args: tuple = ()
     keep_outputs: bool = False   # keep auto-created temp dirs (debugging)
+    use_kernels: bool | None = None  # None = auto-detect cuequivariance_torch
+
+
+def kernels_available() -> bool:
+    """Whether Boltz's cuEquivariance CUDA kernels can actually be imported.
+
+    Boltz calls into cuequivariance_torch for the triangular multiplicative
+    update. If that package is missing (or unsupported on the GPU), EVERY
+    prediction dies with ModuleNotFoundError partway through the forward pass —
+    which looks like a pipeline bug rather than a missing dependency. Detect it
+    once and pass --no_kernels so the run proceeds on the PyTorch path.
+    """
+    import importlib.util
+    return importlib.util.find_spec("cuequivariance_torch") is not None
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -185,6 +199,9 @@ class Boltz2Oracle(Oracle):
         cmd = [cfg.boltz_bin, "predict", str(yaml_path),
                "--out_dir", str(root), "--devices", str(cfg.devices),
                "--output_format", "pdb", "--override"]
+        use_k = cfg.use_kernels if cfg.use_kernels is not None else kernels_available()
+        if not use_k:
+            cmd.append("--no_kernels")
         if cfg.use_msa_server and not cfg.precomputed_msa:
             cmd.append("--use_msa_server")
         cmd.extend(cfg.extra_args)

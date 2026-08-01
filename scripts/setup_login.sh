@@ -72,6 +72,22 @@ python -c "import boltz" 2>/dev/null && echo "   already installed" \
   || python -m pip install -q boltz && echo "   installed"
 
 echo
+echo "==> 4b. Boltz CUDA kernels (cuEquivariance)"
+# Boltz calls cuequivariance_torch for the triangular multiplicative update.
+# Without it every prediction dies mid-forward-pass with ModuleNotFoundError.
+# Installing it is the fast path; the code falls back to --no_kernels if absent.
+if python -c "import cuequivariance_torch" 2>/dev/null; then
+  echo "   already installed"
+else
+  python -m pip install -q cuequivariance-torch cuequivariance-ops-torch-cu12 \
+    2>/dev/null && echo "   installed (cu12)" \
+    || python -m pip install -q cuequivariance-torch cuequivariance-ops-torch-cu13 \
+    2>/dev/null && echo "   installed (cu13)" \
+    || echo "   !! not installed - runs will use --no_kernels (slower but correct)"
+fi
+python -c "import importlib.util as u; print('   kernels available:', u.find_spec('cuequivariance_torch') is not None)"
+
+echo
 echo "==> 5. pre-download Boltz weights (do it HERE, not on a GPU allocation)"
 python - <<'PY' || echo "   !! weight pre-download failed; it will download on first GPU run"
 try:
