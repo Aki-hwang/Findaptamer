@@ -1,0 +1,144 @@
+{
+  "prediction_rank1": "GGGAGGGTGGGTGGGT",
+  "prediction_top": [
+    "GGGAGGGTGGGTGGGT",
+    "GGGCGGGTGGGTGGGT",
+    "GGGTGGGAGGGAGGGT",
+    "GGGTGGGAGGGTGGGT",
+    "GGGTGGGCGGGTGGGT",
+    "GGGTGGGTGGGAGGGT",
+    "GGGTGGGTGGGCGGGT",
+    "GGGAGGGTGGGTGGG",
+    "GGGCGGGTGGGTGGG",
+    "GGGTGGGAGGGAGGG",
+    "GGGTGGGAGGGTGGG",
+    "GGGTGGGCGGGTGGG"
+  ],
+  "unconstrained_rank1": "GGGTGGGTGGGTGGGT",
+  "unconstrained_top": [
+    "GGGTGGGTGGGTGGGT",
+    "GGGTGGGTGGGTGGG",
+    "GGGAGGGTGGGTGGGT",
+    "GGGCGGGTGGGTGGGT",
+    "GGGTGGGAGGGAGGGT",
+    "GGGTGGGAGGGTGGGT",
+    "GGGTGGGCGGGTGGGT",
+    "GGGTGGGTGGGAGGGT",
+    "GGGTGGGTGGGCGGGT",
+    "GGGAGGGTGGGTGGG",
+    "GGGCGGGTGGGTGGG",
+    "GGGTGGGAGGGAGGG"
+  ],
+  "patentability_note": "The unconstrained rank-1 is d(GGGT)4 (T30695 / Zintevir), which is published prior art and therefore cannot be the patent's claimed sequence. prediction_rank1 is the top candidate after removing prior art and trivial truncations of it. Leave-one-out recovered d(GGGT)4 at rank 1 of 355,914 WITHOUT it in the reference set, so the topology preference is not self-fulfilling.",
+  "candidate_space": 355914,
+  "weights": {
+    "short_loops": 3.0,
+    "tract3": 2.0,
+    "similarity": 3.0,
+    "g4hunter": 1.5,
+    "length": 1.0
+  },
+  "references": [
+    {
+      "name": "T30695 / d(GGGT)4",
+      "seq": "GGGTGGGTGGGTGGGT",
+      "topology": "parallel",
+      "penetrant": true,
+      "inhibitory": true,
+      "target": "HIV-1 integrase + IL-6R (two unrelated proteins)",
+      "source": "RNA Biol 2013 10.4161/rna.22951; Biochimie 2016 PMID 27109379"
+    },
+    {
+      "name": "AS1411 / AGRO100",
+      "seq": "GGTGGTGGTGGTTGTGGTGGTGGTGG",
+      "topology": "parallel/mixed",
+      "penetrant": true,
+      "inhibitory": true,
+      "target": "nucleolin; antiproliferative",
+      "source": "Bates et al. Exp Mol Pathol 2009"
+    },
+    {
+      "name": "93del",
+      "seq": "GGGGTGGGAGGAGGGT",
+      "topology": "parallel dimer",
+      "penetrant": true,
+      "inhibitory": true,
+      "target": "HIV-1 integrase",
+      "source": "PMC7117017 (G4 aptamers against protein targets)"
+    },
+    {
+      "name": "T30177",
+      "seq": "GTGGTGGGTGGGTGGGT",
+      "topology": "parallel",
+      "penetrant": true,
+      "inhibitory": true,
+      "target": "HIV-1 integrase",
+      "source": "PMID 21435774 (parallel quadruplex, thermodynamics)"
+    },
+    {
+      "name": "TBA / HD1",
+      "seq": "GGTTGGTGTGGTTGG",
+      "topology": "antiparallel chair",
+      "penetrant": false,
+      "inhibitory": true,
+      "target": "thrombin",
+      "source": "Bock et al. Nature 1992"
+    }
+  ],
+  "leave_one_out": [
+    {
+      "held_out": "T30695 / d(GGGT)4",
+      "seq": "GGGTGGGTGGGTGGGT",
+      "topology": "parallel",
+      "rank": 1,
+      "space": 355914,
+      "top_percent": 0.0003,
+      "penetrant": true
+    },
+    {
+      "held_out": "AS1411 / AGRO100",
+      "seq": "GGTGGTGGTGGTTGTGGTGGTGGTGG",
+      "topology": "parallel/mixed",
+      "rank": 2706,
+      "space": 355915,
+      "top_percent": 0.7603,
+      "penetrant": true
+    },
+    {
+      "held_out": "93del",
+      "seq": "GGGGTGGGAGGAGGGT",
+      "topology": "parallel dimer",
+      "rank": 73,
+      "space": 355915,
+      "top_percent": 0.0205,
+      "penetrant": true
+    },
+    {
+      "held_out": "T30177",
+      "seq": "GTGGTGGGTGGGTGGGT",
+      "topology": "parallel",
+      "rank": 120,
+      "space": 355915,
+      "top_percent": 0.0337,
+      "penetrant": true
+    },
+    {
+      "held_out": "TBA / HD1",
+      "seq": "GGTTGGTGTGGTTGG",
+      "topology": "antiparallel chair",
+      "rank": 3001,
+      "space": 355915,
+      "top_percent": 0.8432,
+      "penetrant": false
+    }
+  ],
+  "loo_summary": "5/5 archetypes recoverable; best rank 1",
+  "grading_rule": {
+    "target": "SEQ ID NO: 1-4 of US9902961B2",
+    "hit": "a true SEQ ID aligns to any of our top-12 at >=80% identity over >=80% of its length",
+    "strong_hit": "the same, against prediction_rank1 alone",
+    "null_baseline": "top-12 drawn from 355914 enumerated candidates is 0.0034% of the space; a hit at that rate is chance",
+    "declared_before_seeing_the_patent": true
+  },
+  "reasoning": "The patent's cell-penetration claim is the discriminating constraint: cell-penetrant protein-inhibiting G4 aptamers are parallel, G3-tract, single-nucleotide-loop sequences (T30695, AS1411, 93del, T30177). Antiparallel chairs such as TBA inhibit but are not reported penetrant, so the prediction is the (GGGT)n class rather than a TBA-like fold."
+}
