@@ -1,0 +1,1125 @@
+{
+  "random_length": 40,
+  "n_random": 200,
+  "n_proteins_tested": 159,
+  "mean_auroc_binder_vs_random": 0.7568,
+  "mean_binder_score": 0.7607,
+  "mean_random_score": 0.6631,
+  "per_protein": [
+    {
+      "protein": 1,
+      "n_binders": 3,
+      "mean_binder_score": 0.7596,
+      "mean_random_score": 0.6774,
+      "auroc_binder_vs_random": 0.7583
+    },
+    {
+      "protein": 8,
+      "n_binders": 2,
+      "mean_binder_score": 0.7261,
+      "mean_random_score": 0.6585,
+      "auroc_binder_vs_random": 0.8162
+    },
+    {
+      "protein": 11,
+      "n_binders": 2,
+      "mean_binder_score": 0.875,
+      "mean_random_score": 0.6421,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 92,
+      "n_binders": 2,
+      "mean_binder_score": 0.7608,
+      "mean_random_score": 0.6735,
+      "auroc_binder_vs_random": 0.96
+    },
+    {
+      "protein": 122,
+      "n_binders": 2,
+      "mean_binder_score": 0.7875,
+      "mean_random_score": 0.6693,
+      "auroc_binder_vs_random": 0.955
+    },
+    {
+      "protein": 149,
+      "n_binders": 2,
+      "mean_binder_score": 0.9308,
+      "mean_random_score": 0.5155,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 173,
+      "n_binders": 3,
+      "mean_binder_score": 0.7409,
+      "mean_random_score": 0.5888,
+      "auroc_binder_vs_random": 0.9317
+    },
+    {
+      "protein": 176,
+      "n_binders": 3,
+      "mean_binder_score": 0.7583,
+      "mean_random_score": 0.6309,
+      "auroc_binder_vs_random": 0.8475
+    },
+    {
+      "protein": 202,
+      "n_binders": 2,
+      "mean_binder_score": 0.625,
+      "mean_random_score": 0.6486,
+      "auroc_binder_vs_random": 0.3725
+    },
+    {
+      "protein": 204,
+      "n_binders": 3,
+      "mean_binder_score": 0.9167,
+      "mean_random_score": 0.5883,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 205,
+      "n_binders": 4,
+      "mean_binder_score": 0.7288,
+      "mean_random_score": 0.6311,
+      "auroc_binder_vs_random": 0.8762
+    },
+    {
+      "protein": 206,
+      "n_binders": 4,
+      "mean_binder_score": 0.798,
+      "mean_random_score": 0.6649,
+      "auroc_binder_vs_random": 0.9412
+    },
+    {
+      "protein": 210,
+      "n_binders": 2,
+      "mean_binder_score": 0.5033,
+      "mean_random_score": 0.5595,
+      "auroc_binder_vs_random": 0.1775
+    },
+    {
+      "protein": 211,
+      "n_binders": 3,
+      "mean_binder_score": 0.7306,
+      "mean_random_score": 0.6353,
+      "auroc_binder_vs_random": 0.8275
+    },
+    {
+      "protein": 213,
+      "n_binders": 2,
+      "mean_binder_score": 0.8267,
+      "mean_random_score": 0.615,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 215,
+      "n_binders": 2,
+      "mean_binder_score": 0.9367,
+      "mean_random_score": 0.5816,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 221,
+      "n_binders": 2,
+      "mean_binder_score": 0.7021,
+      "mean_random_score": 0.6647,
+      "auroc_binder_vs_random": 0.6475
+    },
+    {
+      "protein": 222,
+      "n_binders": 3,
+      "mean_binder_score": 0.914,
+      "mean_random_score": 0.6479,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 223,
+      "n_binders": 2,
+      "mean_binder_score": 0.6606,
+      "mean_random_score": 0.6455,
+      "auroc_binder_vs_random": 0.535
+    },
+    {
+      "protein": 227,
+      "n_binders": 4,
+      "mean_binder_score": 0.6998,
+      "mean_random_score": 0.6501,
+      "auroc_binder_vs_random": 0.6781
+    },
+    {
+      "protein": 228,
+      "n_binders": 2,
+      "mean_binder_score": 0.8716,
+      "mean_random_score": 0.8564,
+      "auroc_binder_vs_random": 0.615
+    },
+    {
+      "protein": 229,
+      "n_binders": 2,
+      "mean_binder_score": 0.7525,
+      "mean_random_score": 0.6904,
+      "auroc_binder_vs_random": 0.8037
+    },
+    {
+      "protein": 235,
+      "n_binders": 2,
+      "mean_binder_score": 0.83,
+      "mean_random_score": 0.6532,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 237,
+      "n_binders": 5,
+      "mean_binder_score": 0.8925,
+      "mean_random_score": 0.6218,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 244,
+      "n_binders": 2,
+      "mean_binder_score": 0.761,
+      "mean_random_score": 0.6338,
+      "auroc_binder_vs_random": 0.975
+    },
+    {
+      "protein": 250,
+      "n_binders": 2,
+      "mean_binder_score": 0.6867,
+      "mean_random_score": 0.6547,
+      "auroc_binder_vs_random": 0.5613
+    },
+    {
+      "protein": 251,
+      "n_binders": 5,
+      "mean_binder_score": 0.8976,
+      "mean_random_score": 0.887,
+      "auroc_binder_vs_random": 0.6225
+    },
+    {
+      "protein": 260,
+      "n_binders": 2,
+      "mean_binder_score": 0.7844,
+      "mean_random_score": 0.6363,
+      "auroc_binder_vs_random": 0.9825
+    },
+    {
+      "protein": 262,
+      "n_binders": 2,
+      "mean_binder_score": 0.6052,
+      "mean_random_score": 0.6459,
+      "auroc_binder_vs_random": 0.27
+    },
+    {
+      "protein": 268,
+      "n_binders": 2,
+      "mean_binder_score": 0.7287,
+      "mean_random_score": 0.6488,
+      "auroc_binder_vs_random": 0.8875
+    },
+    {
+      "protein": 293,
+      "n_binders": 2,
+      "mean_binder_score": 0.8317,
+      "mean_random_score": 0.6636,
+      "auroc_binder_vs_random": 0.9825
+    },
+    {
+      "protein": 305,
+      "n_binders": 2,
+      "mean_binder_score": 0.5822,
+      "mean_random_score": 0.6195,
+      "auroc_binder_vs_random": 0.3013
+    },
+    {
+      "protein": 25,
+      "n_binders": 2,
+      "mean_binder_score": 0.662,
+      "mean_random_score": 0.6558,
+      "auroc_binder_vs_random": 0.49
+    },
+    {
+      "protein": 66,
+      "n_binders": 2,
+      "mean_binder_score": 0.688,
+      "mean_random_score": 0.6544,
+      "auroc_binder_vs_random": 0.6425
+    },
+    {
+      "protein": 76,
+      "n_binders": 4,
+      "mean_binder_score": 0.765,
+      "mean_random_score": 0.6343,
+      "auroc_binder_vs_random": 0.9706
+    },
+    {
+      "protein": 83,
+      "n_binders": 2,
+      "mean_binder_score": 0.7183,
+      "mean_random_score": 0.6342,
+      "auroc_binder_vs_random": 0.7625
+    },
+    {
+      "protein": 111,
+      "n_binders": 2,
+      "mean_binder_score": 0.6681,
+      "mean_random_score": 0.6463,
+      "auroc_binder_vs_random": 0.5875
+    },
+    {
+      "protein": 167,
+      "n_binders": 2,
+      "mean_binder_score": 0.69,
+      "mean_random_score": 0.6355,
+      "auroc_binder_vs_random": 0.7525
+    },
+    {
+      "protein": 173,
+      "n_binders": 2,
+      "mean_binder_score": 0.795,
+      "mean_random_score": 0.6019,
+      "auroc_binder_vs_random": 0.985
+    },
+    {
+      "protein": 176,
+      "n_binders": 4,
+      "mean_binder_score": 0.7449,
+      "mean_random_score": 0.6342,
+      "auroc_binder_vs_random": 0.8975
+    },
+    {
+      "protein": 184,
+      "n_binders": 2,
+      "mean_binder_score": 0.8061,
+      "mean_random_score": 0.6723,
+      "auroc_binder_vs_random": 0.7475
+    },
+    {
+      "protein": 199,
+      "n_binders": 2,
+      "mean_binder_score": 0.7967,
+      "mean_random_score": 0.6709,
+      "auroc_binder_vs_random": 0.8962
+    },
+    {
+      "protein": 200,
+      "n_binders": 4,
+      "mean_binder_score": 0.7887,
+      "mean_random_score": 0.6594,
+      "auroc_binder_vs_random": 0.8912
+    },
+    {
+      "protein": 204,
+      "n_binders": 2,
+      "mean_binder_score": 0.905,
+      "mean_random_score": 0.6154,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 205,
+      "n_binders": 3,
+      "mean_binder_score": 0.7412,
+      "mean_random_score": 0.6528,
+      "auroc_binder_vs_random": 0.8458
+    },
+    {
+      "protein": 206,
+      "n_binders": 7,
+      "mean_binder_score": 0.74,
+      "mean_random_score": 0.6647,
+      "auroc_binder_vs_random": 0.7532
+    },
+    {
+      "protein": 208,
+      "n_binders": 4,
+      "mean_binder_score": 0.7454,
+      "mean_random_score": 0.638,
+      "auroc_binder_vs_random": 0.9319
+    },
+    {
+      "protein": 213,
+      "n_binders": 2,
+      "mean_binder_score": 0.89,
+      "mean_random_score": 0.6241,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 214,
+      "n_binders": 2,
+      "mean_binder_score": 0.6058,
+      "mean_random_score": 0.65,
+      "auroc_binder_vs_random": 0.465
+    },
+    {
+      "protein": 215,
+      "n_binders": 4,
+      "mean_binder_score": 0.8467,
+      "mean_random_score": 0.5922,
+      "auroc_binder_vs_random": 0.8775
+    },
+    {
+      "protein": 216,
+      "n_binders": 3,
+      "mean_binder_score": 0.5273,
+      "mean_random_score": 0.5928,
+      "auroc_binder_vs_random": 0.3558
+    },
+    {
+      "protein": 225,
+      "n_binders": 3,
+      "mean_binder_score": 0.9422,
+      "mean_random_score": 0.8328,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 227,
+      "n_binders": 2,
+      "mean_binder_score": 0.8633,
+      "mean_random_score": 0.6503,
+      "auroc_binder_vs_random": 0.9825
+    },
+    {
+      "protein": 228,
+      "n_binders": 3,
+      "mean_binder_score": 0.9674,
+      "mean_random_score": 0.8342,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 229,
+      "n_binders": 2,
+      "mean_binder_score": 0.84,
+      "mean_random_score": 0.6835,
+      "auroc_binder_vs_random": 0.9312
+    },
+    {
+      "protein": 234,
+      "n_binders": 2,
+      "mean_binder_score": 0.7583,
+      "mean_random_score": 0.6398,
+      "auroc_binder_vs_random": 0.9563
+    },
+    {
+      "protein": 247,
+      "n_binders": 2,
+      "mean_binder_score": 0.4636,
+      "mean_random_score": 0.6346,
+      "auroc_binder_vs_random": 0.02
+    },
+    {
+      "protein": 251,
+      "n_binders": 3,
+      "mean_binder_score": 0.9326,
+      "mean_random_score": 0.9175,
+      "auroc_binder_vs_random": 0.6842
+    },
+    {
+      "protein": 257,
+      "n_binders": 4,
+      "mean_binder_score": 0.725,
+      "mean_random_score": 0.6192,
+      "auroc_binder_vs_random": 0.8981
+    },
+    {
+      "protein": 261,
+      "n_binders": 2,
+      "mean_binder_score": 0.803,
+      "mean_random_score": 0.7769,
+      "auroc_binder_vs_random": 0.6837
+    },
+    {
+      "protein": 265,
+      "n_binders": 2,
+      "mean_binder_score": 0.8493,
+      "mean_random_score": 0.6526,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 269,
+      "n_binders": 3,
+      "mean_binder_score": 0.715,
+      "mean_random_score": 0.6379,
+      "auroc_binder_vs_random": 0.8525
+    },
+    {
+      "protein": 293,
+      "n_binders": 2,
+      "mean_binder_score": 0.7679,
+      "mean_random_score": 0.6668,
+      "auroc_binder_vs_random": 0.9
+    },
+    {
+      "protein": 300,
+      "n_binders": 2,
+      "mean_binder_score": 0.5687,
+      "mean_random_score": 0.6002,
+      "auroc_binder_vs_random": 0.3762
+    },
+    {
+      "protein": 1,
+      "n_binders": 2,
+      "mean_binder_score": 0.67,
+      "mean_random_score": 0.6934,
+      "auroc_binder_vs_random": 0.38
+    },
+    {
+      "protein": 3,
+      "n_binders": 3,
+      "mean_binder_score": 0.644,
+      "mean_random_score": 0.674,
+      "auroc_binder_vs_random": 0.3708
+    },
+    {
+      "protein": 26,
+      "n_binders": 3,
+      "mean_binder_score": 0.8178,
+      "mean_random_score": 0.655,
+      "auroc_binder_vs_random": 0.975
+    },
+    {
+      "protein": 76,
+      "n_binders": 3,
+      "mean_binder_score": 0.6978,
+      "mean_random_score": 0.626,
+      "auroc_binder_vs_random": 0.825
+    },
+    {
+      "protein": 83,
+      "n_binders": 2,
+      "mean_binder_score": 0.721,
+      "mean_random_score": 0.6328,
+      "auroc_binder_vs_random": 0.9225
+    },
+    {
+      "protein": 84,
+      "n_binders": 2,
+      "mean_binder_score": 0.765,
+      "mean_random_score": 0.7864,
+      "auroc_binder_vs_random": 0.25
+    },
+    {
+      "protein": 86,
+      "n_binders": 2,
+      "mean_binder_score": 0.7133,
+      "mean_random_score": 0.7408,
+      "auroc_binder_vs_random": 0.245
+    },
+    {
+      "protein": 110,
+      "n_binders": 2,
+      "mean_binder_score": 0.6933,
+      "mean_random_score": 0.6497,
+      "auroc_binder_vs_random": 0.75
+    },
+    {
+      "protein": 124,
+      "n_binders": 3,
+      "mean_binder_score": 0.7409,
+      "mean_random_score": 0.6592,
+      "auroc_binder_vs_random": 0.9233
+    },
+    {
+      "protein": 130,
+      "n_binders": 3,
+      "mean_binder_score": 0.8022,
+      "mean_random_score": 0.6337,
+      "auroc_binder_vs_random": 0.7958
+    },
+    {
+      "protein": 137,
+      "n_binders": 3,
+      "mean_binder_score": 0.8444,
+      "mean_random_score": 0.8351,
+      "auroc_binder_vs_random": 0.3525
+    },
+    {
+      "protein": 149,
+      "n_binders": 2,
+      "mean_binder_score": 0.9069,
+      "mean_random_score": 0.5014,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 176,
+      "n_binders": 5,
+      "mean_binder_score": 0.7996,
+      "mean_random_score": 0.6387,
+      "auroc_binder_vs_random": 0.963
+    },
+    {
+      "protein": 192,
+      "n_binders": 3,
+      "mean_binder_score": 0.6019,
+      "mean_random_score": 0.6361,
+      "auroc_binder_vs_random": 0.3192
+    },
+    {
+      "protein": 199,
+      "n_binders": 2,
+      "mean_binder_score": 0.6817,
+      "mean_random_score": 0.6853,
+      "auroc_binder_vs_random": 0.465
+    },
+    {
+      "protein": 202,
+      "n_binders": 5,
+      "mean_binder_score": 0.6705,
+      "mean_random_score": 0.6372,
+      "auroc_binder_vs_random": 0.6575
+    },
+    {
+      "protein": 204,
+      "n_binders": 3,
+      "mean_binder_score": 0.8578,
+      "mean_random_score": 0.5965,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 205,
+      "n_binders": 5,
+      "mean_binder_score": 0.7085,
+      "mean_random_score": 0.6413,
+      "auroc_binder_vs_random": 0.7495
+    },
+    {
+      "protein": 206,
+      "n_binders": 3,
+      "mean_binder_score": 0.8752,
+      "mean_random_score": 0.6902,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 214,
+      "n_binders": 2,
+      "mean_binder_score": 0.7026,
+      "mean_random_score": 0.6258,
+      "auroc_binder_vs_random": 0.77
+    },
+    {
+      "protein": 220,
+      "n_binders": 2,
+      "mean_binder_score": 0.86,
+      "mean_random_score": 0.6427,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 224,
+      "n_binders": 4,
+      "mean_binder_score": 0.7833,
+      "mean_random_score": 0.562,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 225,
+      "n_binders": 3,
+      "mean_binder_score": 0.9104,
+      "mean_random_score": 0.8513,
+      "auroc_binder_vs_random": 0.98
+    },
+    {
+      "protein": 228,
+      "n_binders": 4,
+      "mean_binder_score": 0.9331,
+      "mean_random_score": 0.8413,
+      "auroc_binder_vs_random": 0.9988
+    },
+    {
+      "protein": 229,
+      "n_binders": 3,
+      "mean_binder_score": 0.8344,
+      "mean_random_score": 0.6784,
+      "auroc_binder_vs_random": 0.9867
+    },
+    {
+      "protein": 237,
+      "n_binders": 4,
+      "mean_binder_score": 0.7583,
+      "mean_random_score": 0.6383,
+      "auroc_binder_vs_random": 0.97
+    },
+    {
+      "protein": 239,
+      "n_binders": 5,
+      "mean_binder_score": 0.7273,
+      "mean_random_score": 0.6454,
+      "auroc_binder_vs_random": 0.7195
+    },
+    {
+      "protein": 249,
+      "n_binders": 2,
+      "mean_binder_score": 0.8078,
+      "mean_random_score": 0.7155,
+      "auroc_binder_vs_random": 0.98
+    },
+    {
+      "protein": 251,
+      "n_binders": 2,
+      "mean_binder_score": 0.9072,
+      "mean_random_score": 0.915,
+      "auroc_binder_vs_random": 0.3888
+    },
+    {
+      "protein": 256,
+      "n_binders": 3,
+      "mean_binder_score": 0.7752,
+      "mean_random_score": 0.6062,
+      "auroc_binder_vs_random": 0.9833
+    },
+    {
+      "protein": 259,
+      "n_binders": 2,
+      "mean_binder_score": 0.6917,
+      "mean_random_score": 0.6482,
+      "auroc_binder_vs_random": 0.7187
+    },
+    {
+      "protein": 266,
+      "n_binders": 2,
+      "mean_binder_score": 0.6142,
+      "mean_random_score": 0.5976,
+      "auroc_binder_vs_random": 0.605
+    },
+    {
+      "protein": 275,
+      "n_binders": 3,
+      "mean_binder_score": 0.7101,
+      "mean_random_score": 0.6536,
+      "auroc_binder_vs_random": 0.7625
+    },
+    {
+      "protein": 1,
+      "n_binders": 3,
+      "mean_binder_score": 0.663,
+      "mean_random_score": 0.6587,
+      "auroc_binder_vs_random": 0.5625
+    },
+    {
+      "protein": 3,
+      "n_binders": 3,
+      "mean_binder_score": 0.5722,
+      "mean_random_score": 0.6661,
+      "auroc_binder_vs_random": 0.105
+    },
+    {
+      "protein": 70,
+      "n_binders": 2,
+      "mean_binder_score": 0.6194,
+      "mean_random_score": 0.6657,
+      "auroc_binder_vs_random": 0.2275
+    },
+    {
+      "protein": 76,
+      "n_binders": 3,
+      "mean_binder_score": 0.7,
+      "mean_random_score": 0.6152,
+      "auroc_binder_vs_random": 0.9008
+    },
+    {
+      "protein": 83,
+      "n_binders": 7,
+      "mean_binder_score": 0.6568,
+      "mean_random_score": 0.5938,
+      "auroc_binder_vs_random": 0.6825
+    },
+    {
+      "protein": 91,
+      "n_binders": 2,
+      "mean_binder_score": 0.89,
+      "mean_random_score": 0.6573,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 118,
+      "n_binders": 3,
+      "mean_binder_score": 0.6552,
+      "mean_random_score": 0.6601,
+      "auroc_binder_vs_random": 0.4267
+    },
+    {
+      "protein": 122,
+      "n_binders": 3,
+      "mean_binder_score": 0.6528,
+      "mean_random_score": 0.671,
+      "auroc_binder_vs_random": 0.3983
+    },
+    {
+      "protein": 128,
+      "n_binders": 2,
+      "mean_binder_score": 0.7649,
+      "mean_random_score": 0.6536,
+      "auroc_binder_vs_random": 0.6475
+    },
+    {
+      "protein": 149,
+      "n_binders": 3,
+      "mean_binder_score": 0.892,
+      "mean_random_score": 0.4868,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 176,
+      "n_binders": 3,
+      "mean_binder_score": 0.7607,
+      "mean_random_score": 0.6366,
+      "auroc_binder_vs_random": 0.8258
+    },
+    {
+      "protein": 184,
+      "n_binders": 3,
+      "mean_binder_score": 0.7919,
+      "mean_random_score": 0.6624,
+      "auroc_binder_vs_random": 0.7967
+    },
+    {
+      "protein": 191,
+      "n_binders": 2,
+      "mean_binder_score": 0.6433,
+      "mean_random_score": 0.6491,
+      "auroc_binder_vs_random": 0.435
+    },
+    {
+      "protein": 202,
+      "n_binders": 4,
+      "mean_binder_score": 0.6958,
+      "mean_random_score": 0.6294,
+      "auroc_binder_vs_random": 0.8394
+    },
+    {
+      "protein": 204,
+      "n_binders": 3,
+      "mean_binder_score": 0.9197,
+      "mean_random_score": 0.6087,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 205,
+      "n_binders": 9,
+      "mean_binder_score": 0.6851,
+      "mean_random_score": 0.6135,
+      "auroc_binder_vs_random": 0.8089
+    },
+    {
+      "protein": 206,
+      "n_binders": 5,
+      "mean_binder_score": 0.7543,
+      "mean_random_score": 0.6613,
+      "auroc_binder_vs_random": 0.772
+    },
+    {
+      "protein": 209,
+      "n_binders": 2,
+      "mean_binder_score": 0.7794,
+      "mean_random_score": 0.6404,
+      "auroc_binder_vs_random": 0.98
+    },
+    {
+      "protein": 211,
+      "n_binders": 4,
+      "mean_binder_score": 0.7287,
+      "mean_random_score": 0.6135,
+      "auroc_binder_vs_random": 0.8638
+    },
+    {
+      "protein": 213,
+      "n_binders": 3,
+      "mean_binder_score": 0.8643,
+      "mean_random_score": 0.619,
+      "auroc_binder_vs_random": 0.9733
+    },
+    {
+      "protein": 214,
+      "n_binders": 3,
+      "mean_binder_score": 0.6896,
+      "mean_random_score": 0.6136,
+      "auroc_binder_vs_random": 0.69
+    },
+    {
+      "protein": 220,
+      "n_binders": 4,
+      "mean_binder_score": 0.665,
+      "mean_random_score": 0.5989,
+      "auroc_binder_vs_random": 0.6288
+    },
+    {
+      "protein": 222,
+      "n_binders": 2,
+      "mean_binder_score": 0.8383,
+      "mean_random_score": 0.6392,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 224,
+      "n_binders": 3,
+      "mean_binder_score": 0.7144,
+      "mean_random_score": 0.553,
+      "auroc_binder_vs_random": 0.99
+    },
+    {
+      "protein": 225,
+      "n_binders": 3,
+      "mean_binder_score": 0.8993,
+      "mean_random_score": 0.8537,
+      "auroc_binder_vs_random": 0.8675
+    },
+    {
+      "protein": 227,
+      "n_binders": 2,
+      "mean_binder_score": 0.79,
+      "mean_random_score": 0.6739,
+      "auroc_binder_vs_random": 0.7237
+    },
+    {
+      "protein": 229,
+      "n_binders": 3,
+      "mean_binder_score": 0.7592,
+      "mean_random_score": 0.6618,
+      "auroc_binder_vs_random": 0.8283
+    },
+    {
+      "protein": 239,
+      "n_binders": 2,
+      "mean_binder_score": 0.803,
+      "mean_random_score": 0.6682,
+      "auroc_binder_vs_random": 0.8675
+    },
+    {
+      "protein": 243,
+      "n_binders": 3,
+      "mean_binder_score": 0.8546,
+      "mean_random_score": 0.7782,
+      "auroc_binder_vs_random": 0.9867
+    },
+    {
+      "protein": 1,
+      "n_binders": 2,
+      "mean_binder_score": 0.7017,
+      "mean_random_score": 0.6849,
+      "auroc_binder_vs_random": 0.525
+    },
+    {
+      "protein": 3,
+      "n_binders": 4,
+      "mean_binder_score": 0.7081,
+      "mean_random_score": 0.6644,
+      "auroc_binder_vs_random": 0.7219
+    },
+    {
+      "protein": 17,
+      "n_binders": 2,
+      "mean_binder_score": 0.8264,
+      "mean_random_score": 0.6704,
+      "auroc_binder_vs_random": 0.9875
+    },
+    {
+      "protein": 90,
+      "n_binders": 2,
+      "mean_binder_score": 0.6808,
+      "mean_random_score": 0.6808,
+      "auroc_binder_vs_random": 0.4425
+    },
+    {
+      "protein": 94,
+      "n_binders": 2,
+      "mean_binder_score": 0.6333,
+      "mean_random_score": 0.6643,
+      "auroc_binder_vs_random": 0.28
+    },
+    {
+      "protein": 99,
+      "n_binders": 2,
+      "mean_binder_score": 0.78,
+      "mean_random_score": 0.7911,
+      "auroc_binder_vs_random": 0.3575
+    },
+    {
+      "protein": 118,
+      "n_binders": 2,
+      "mean_binder_score": 0.7397,
+      "mean_random_score": 0.693,
+      "auroc_binder_vs_random": 0.655
+    },
+    {
+      "protein": 122,
+      "n_binders": 7,
+      "mean_binder_score": 0.7463,
+      "mean_random_score": 0.672,
+      "auroc_binder_vs_random": 0.8007
+    },
+    {
+      "protein": 137,
+      "n_binders": 3,
+      "mean_binder_score": 0.8799,
+      "mean_random_score": 0.7857,
+      "auroc_binder_vs_random": 0.7442
+    },
+    {
+      "protein": 149,
+      "n_binders": 4,
+      "mean_binder_score": 0.9072,
+      "mean_random_score": 0.5565,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 184,
+      "n_binders": 3,
+      "mean_binder_score": 0.7344,
+      "mean_random_score": 0.667,
+      "auroc_binder_vs_random": 0.7317
+    },
+    {
+      "protein": 199,
+      "n_binders": 2,
+      "mean_binder_score": 0.72,
+      "mean_random_score": 0.6779,
+      "auroc_binder_vs_random": 0.565
+    },
+    {
+      "protein": 200,
+      "n_binders": 2,
+      "mean_binder_score": 0.7972,
+      "mean_random_score": 0.6616,
+      "auroc_binder_vs_random": 0.845
+    },
+    {
+      "protein": 204,
+      "n_binders": 2,
+      "mean_binder_score": 0.8723,
+      "mean_random_score": 0.6213,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 206,
+      "n_binders": 3,
+      "mean_binder_score": 0.799,
+      "mean_random_score": 0.6827,
+      "auroc_binder_vs_random": 0.8117
+    },
+    {
+      "protein": 211,
+      "n_binders": 2,
+      "mean_binder_score": 0.7591,
+      "mean_random_score": 0.6459,
+      "auroc_binder_vs_random": 0.975
+    },
+    {
+      "protein": 214,
+      "n_binders": 2,
+      "mean_binder_score": 0.6317,
+      "mean_random_score": 0.6427,
+      "auroc_binder_vs_random": 0.3988
+    },
+    {
+      "protein": 216,
+      "n_binders": 2,
+      "mean_binder_score": 0.5986,
+      "mean_random_score": 0.6184,
+      "auroc_binder_vs_random": 0.4037
+    },
+    {
+      "protein": 217,
+      "n_binders": 2,
+      "mean_binder_score": 0.5167,
+      "mean_random_score": 0.6403,
+      "auroc_binder_vs_random": 0.1187
+    },
+    {
+      "protein": 221,
+      "n_binders": 3,
+      "mean_binder_score": 0.6578,
+      "mean_random_score": 0.6666,
+      "auroc_binder_vs_random": 0.4317
+    },
+    {
+      "protein": 224,
+      "n_binders": 2,
+      "mean_binder_score": 0.7666,
+      "mean_random_score": 0.5725,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 228,
+      "n_binders": 3,
+      "mean_binder_score": 0.9571,
+      "mean_random_score": 0.8253,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 229,
+      "n_binders": 3,
+      "mean_binder_score": 0.8309,
+      "mean_random_score": 0.6926,
+      "auroc_binder_vs_random": 0.8933
+    },
+    {
+      "protein": 230,
+      "n_binders": 3,
+      "mean_binder_score": 0.7933,
+      "mean_random_score": 0.6541,
+      "auroc_binder_vs_random": 0.9908
+    },
+    {
+      "protein": 241,
+      "n_binders": 2,
+      "mean_binder_score": 0.7332,
+      "mean_random_score": 0.6858,
+      "auroc_binder_vs_random": 0.755
+    },
+    {
+      "protein": 243,
+      "n_binders": 2,
+      "mean_binder_score": 0.8728,
+      "mean_random_score": 0.7503,
+      "auroc_binder_vs_random": 0.9975
+    },
+    {
+      "protein": 244,
+      "n_binders": 2,
+      "mean_binder_score": 0.7468,
+      "mean_random_score": 0.6634,
+      "auroc_binder_vs_random": 0.8725
+    },
+    {
+      "protein": 249,
+      "n_binders": 3,
+      "mean_binder_score": 0.8191,
+      "mean_random_score": 0.6915,
+      "auroc_binder_vs_random": 0.9983
+    },
+    {
+      "protein": 251,
+      "n_binders": 4,
+      "mean_binder_score": 0.8315,
+      "mean_random_score": 0.873,
+      "auroc_binder_vs_random": 0.145
+    },
+    {
+      "protein": 258,
+      "n_binders": 2,
+      "mean_binder_score": 0.7067,
+      "mean_random_score": 0.6743,
+      "auroc_binder_vs_random": 0.6275
+    },
+    {
+      "protein": 265,
+      "n_binders": 3,
+      "mean_binder_score": 0.8208,
+      "mean_random_score": 0.6427,
+      "auroc_binder_vs_random": 1.0
+    },
+    {
+      "protein": 278,
+      "n_binders": 2,
+      "mean_binder_score": 0.6531,
+      "mean_random_score": 0.6419,
+      "auroc_binder_vs_random": 0.5475
+    },
+    {
+      "protein": 299,
+      "n_binders": 6,
+      "mean_binder_score": 0.6933,
+      "mean_random_score": 0.667,
+      "auroc_binder_vs_random": 0.6075
+    }
+  ],
+  "usable": true,
+  "verdict": "USABLE for in-silico SELEX: real binders outrank random 40-mers at AUROC 0.757, so selection pressure is real."
+}

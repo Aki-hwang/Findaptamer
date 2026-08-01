@@ -1,0 +1,32 @@
+{
+  "n_pairs": 3404,
+  "n_positive": 850,
+  "n_distinct_aptamers": 803,
+  "conditions": {
+    "full": {
+      "auroc_grouped": 0.7277,
+      "accuracy_grouped": 0.3302,
+      "auroc_random_split": 0.954
+    },
+    "aptamer_only": {
+      "auroc_grouped": 0.5096,
+      "accuracy_grouped": 0.2477,
+      "auroc_random_split": 0.8729
+    },
+    "protein_only": {
+      "auroc_grouped": 0.5919,
+      "accuracy_grouped": 0.6257,
+      "auroc_random_split": 0.6148
+    },
+    "protein_shuffled": {
+      "auroc_grouped": 0.5159,
+      "accuracy_grouped": 0.27,
+      "auroc_random_split": 0.9195
+    }
+  },
+  "delta_auroc_protein_removed": 0.2181,
+  "delta_auroc_protein_shuffled": 0.2118,
+  "reads_protein": true,
+  "verdict": "USABLE as a target-specific oracle: removing the protein costs +0.2181 AUROC and scrambling it costs +0.2118, so the score does depend on which protein is being scored.",
+  "source": "github.com/nedaemami/AptaNet (Sci Rep 2021)"
+}
