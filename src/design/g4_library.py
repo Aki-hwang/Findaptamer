@@ -162,6 +162,20 @@ def screen(cand: dict, g4_min: float, mfe_floor: float, tba_p_min: float,
     m["g4hunter_core"] = round(core_win, 3)
     m["g4hunter"] = round(full_win, 3)
     m["flank_penalty"] = round(core_win - full_win, 3)
+
+    # The one part of G4Hunter that IS length-fair: its SIGN. A negative core
+    # means the loops carry more C character than the tracts carry G character,
+    # and loop C's are the complement of the tracts -- they can pair with them
+    # and dismantle the fold. Unlike the magnitude, the sign does not move with
+    # length, so gating on it smuggles in no loop-length preference.
+    if core_win <= 0:
+        return False, "C-rich loops outweigh the G-tracts", m
+    # Belt and braces, mechanistically rather than statistically: a CCC+ run
+    # inside a loop is a direct pairing liability even when the overall sign
+    # survives, and it is also an i-motif seed at low pH.
+    for loop in (cand["loop1"], cand["loop2"], cand["loop3"]):
+        if "CCC" in loop:
+            return False, "CCC run inside a loop", m
     # Where G4Hunter IS informative: flanks are drawn from the full alphabet, so
     # a C-rich flank can both score negative and pair with a G-tract. Gate on
     # the degradation the flanks cause, which is length-fair by construction.
