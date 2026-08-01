@@ -140,20 +140,34 @@ def main():
     print(f"Oracle: {kind}\n{len(positives)} positive(s) x {len(seeds)} seed(s) "
           f"and {len(negatives)} negatives (length {L}, chemistry {p_chem}) ...\n")
 
+    import time as _time
+    total_calls = (len(positives) + len(negatives)) * len(seeds)
+    state = {"done": 0, "t0": _time.time()}
+
     def score_one(label, seq, chem, cls):
         vals = []
         for sd in seeds:
+            t = _time.time()
             o, _ = build_oracle(args.oracle, args.receptor, chem,
                                 sd if args.oracle != "proxy" else None)
             sc = o.score(seq)
             vals.append(sc.value)
+            state["done"] += 1
+            # Each co-fold takes minutes and its subprocess output is captured,
+            # so without a per-seed line the log looks frozen for a long time.
+            el = _time.time() - state["t0"]
+            eta = el / state["done"] * (total_calls - state["done"])
+            print(f"    [{state['done']:>3d}/{total_calls}] {label}#s{sd} "
+                  f"= {sc.value:.4f}  ({_time.time()-t:.0f}s, ETA {eta/60:.0f}m)",
+                  flush=True)
             rows.append({"label": f"{label}#s{sd}", "class": cls, "chemistry": chem,
                          "sequence": seq, "seed": sd, "score": sc.value,
                          "details": sc.details})
         m = sum(vals) / len(vals)
         spread = (max(vals) - min(vals)) if len(vals) > 1 else 0.0
         print(f"  {cls:8s} {label:16s} {m:.4f}"
-              + (f"  (spread {spread:.3f} over {len(vals)} seeds)" if len(vals) > 1 else ""))
+              + (f"  (spread {spread:.3f} over {len(vals)} seeds)" if len(vals) > 1 else ""),
+              flush=True)
         return m
 
     pos = [score_one(n, s, c, "positive") for n, s, c in positives]

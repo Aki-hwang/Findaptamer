@@ -46,6 +46,9 @@ RECEPTOR="${RECEPTOR:-data/mmp9/mmp9_receptor.fasta}"
 
 read -r -d '' PAYLOAD <<EOF || true
 set -euo pipefail
+# Batch stdout is a file, so Python block-buffers several KB before the
+# first line ever reaches the log. That makes a running job look dead.
+export PYTHONUNBUFFERED=1
 cd "\$SLURM_SUBMIT_DIR"
 echo "=== node: \$(hostname) ==="
 nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
@@ -111,6 +114,7 @@ if [ "$MODE" = "batch" ]; then
 #SBATCH --mail-user=${EMAIL}
 #SBATCH --output=logs/${JOB}-%j.out
 #SBATCH --error=logs/${JOB}-%j.err
+#SBATCH --open-mode=append
 ${PAYLOAD}
 SBATCH
   echo "submitted. watch with:  squeue -u \$(whoami)   /   tail -f logs/${JOB}-*.out"

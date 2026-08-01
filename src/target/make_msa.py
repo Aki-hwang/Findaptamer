@@ -68,7 +68,9 @@ def main():
     import subprocess
     cmd = [cfg.boltz_bin, "predict", str(yaml_path), "--out_dir", str(work),
            "--use_msa_server", "--devices", "1", "--output_format", "pdb"]
-    print("running one seeding prediction to build the MSA ...")
+    print("running one seeding prediction to build the MSA ...\n"
+          "  (this queries the MSA server and can take several minutes)",
+          flush=True)
     print("  " + " ".join(cmd))
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
