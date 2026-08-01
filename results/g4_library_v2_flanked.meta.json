@@ -1,26 +1,27 @@
 {
-  "n_generated": 7748,
-  "n_passed": 5302,
+  "n_generated": 8000,
+  "n_passed": 2343,
   "n_emitted": 1000,
   "rejections": {
-    "C-rich loops outweigh the G-tracts": 130,
-    "too close to TBA": 1337,
-    "CCC run inside a loop": 640,
-    "competing Watson-Crick hairpin": 324,
-    "homopolymer run > 4": 15
+    "CCC run inside a loop": 678,
+    "flanks degrade the G4 core": 3609,
+    "C-rich loops outweigh the G-tracts": 125,
+    "competing Watson-Crick hairpin": 732,
+    "too close to TBA": 345,
+    "homopolymer run > 4": 168
   },
   "params": {
     "n": 1000,
     "tetrads": 2,
-    "flank5": 0,
+    "flank5": 11,
     "flank3": 0,
     "oversample": 8,
     "g4_min": 0.2,
     "mfe_floor": -3.0,
     "tba_p_min": 0.05,
     "shuffles": 300,
-    "seed": 0,
-    "out": "results/g4_library_v1.csv"
+    "seed": 1,
+    "out": "results/g4_library_v2_flanked.csv"
   },
   "provenance": "G4 prior from three independent MMP-9 selections; see docs/07_g4_discovery_ko.md",
   "what_this_is_not": "This library is NOT a binding prediction. No filter here estimates affinity for MMP-9. It is a search-space reduction for one wet SELEX round."

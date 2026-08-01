@@ -7,10 +7,17 @@ it is allowed to rank anything. `src/target/mmp9.py` carried three benchmark
 entries but only one had a usable sequence (F3B, a 2'-F/2'-OMe RNA), which made
 every calibration run a test of modified-RNA modelling as much as of binding.
 
-Compiling this set fixed that and turned up the more useful result: **three
-independent SELEX campaigns against MMP-9 converged on G-quadruplex folds.**
-That convergence is the strongest target-specific prior we have, and unlike a
-predicted binding energy it is an observation, not a model output.
+Compiling this set fixed that and turned up a G-quadruplex prior: the DNA-side
+selections against MMP-9 give G4 folds. That is the strongest target-specific
+prior we have, and unlike a predicted binding energy it is an observation
+rather than a model output.
+
+PROVENANCE CAVEAT, and it is load-bearing. F3B, 8F14A and the LVMH patent all
+come from ONE laboratory -- Toulme and Dausse at INSERM Bordeaux appear as
+authors or inventors on all three. So the G4 observations are NOT independent
+selections; they share a lab, and plausibly a library and a protocol. A shared
+protocol bias is a live alternative explanation for the convergence. Weigh the
+prior accordingly, and see the `independent_of` field on each entry.
 
 CONFIDENCE field — how much weight a calibration may put on an entry:
   "high"    sequence verified in >=2 independent primary sources
@@ -34,8 +41,12 @@ KNOWN_APTAMERS = [
         "length": 36,
         "affinity_nM": 20.0,
         "fold": "stem-loop (no G4 reported)",
+        "forms_g4": False,
         "function": "binder / tumour imaging (inhibition NOT established)",
         "confidence": "medium",
+        "lab": "Toulme / Dausse (INSERM Bordeaux)",
+        "lab_group": "toulme_dausse",
+        "independent_of": [],   # same lab as 8F14A and LVMH_G4_series
         "notes": (
             "Truncated to 36 nt; purines substituted with 2'-O-methyl in the "
             "nuclease-resistant F3Bomf variant. Selected with a 2'-F-pyrimidine "
@@ -56,8 +67,12 @@ KNOWN_APTAMERS = [
         "length": None,
         "affinity_nM": None,
         "fold": "G-quartet (confirmed by CD and Tm)",
+        "forms_g4": True,           # experimental (CD + Tm)
         "function": "binder at a SECOND epitope, non-competitive with F3B",
         "confidence": "claimed",
+        "lab": "Toulme / Dausse (INSERM Bordeaux)",
+        "lab_group": "toulme_dausse",
+        "independent_of": [],   # same lab as F3B and LVMH_G4_series
         "notes": (
             "Used as the sandwich partner to F3B in a piezoelectric biosensor: "
             "the two aptamers bind MMP-9 simultaneously without competition, so "
@@ -77,8 +92,12 @@ KNOWN_APTAMERS = [
         "length": 30,
         "affinity_nM": None,       # Kd not stated in the sources we reached
         "fold": "G-rich; G4 predicted (see src/analysis/g4.py)",
+        "forms_g4": True,           # COMPUTATIONAL prediction only
         "function": "binder / biosensor capture element",
         "confidence": "high",
+        "lab": None,            # original selection not traced to a source we could reach
+        "lab_group": None,      # unknown -- counted as its own group, optimistically
+        "independent_of": ["F3B", "8F14A", "LVMH_G4_series"],
         "notes": (
             "THE MOST USEFUL ENTRY: unmodified DNA, so it can be modelled and "
             "synthesised exactly as published -- no 2'-F / 2'-OMe confounder. "
@@ -106,7 +125,11 @@ KNOWN_APTAMERS = [
         "length": 40,
         "affinity_nM": 13.4,
         "fold": None,
+        "forms_g4": None,           # not reported
         "function": "ACTIVATOR -- potentiates catalysis via the FnII exosite",
+        "lab": "Shimada et al.",
+        "lab_group": "shimada",
+        "independent_of": ["F3B", "8F14A", "LVMH_G4_series"],
         "confidence": "claimed",
         "notes": (
             "A cautionary benchmark, not a goal: tight binding to MMP-9 by "
@@ -123,7 +146,14 @@ KNOWN_APTAMERS = [
         "length": None,
         "affinity_nM": None,
         "fold": "G-quadruplex (explicitly claimed in the patent)",
+        "forms_g4": True,           # asserted in the patent
         "function": "INHIBITOR of MMP-9 gelatinase activity; cell-penetrant",
+        "lab": "Toulme / Dausse (INSERM Bordeaux) + LVMH Recherche",
+        "lab_group": "toulme_dausse",
+        "independent_of": [],   # same lab as F3B and 8F14A
+        "inventors": ["Eric Dausse", "Jean-Jacques Toulme",
+                      "Jean Hubert Cauchard", "Robin Kurfurst",
+                      "Sylvianne Schnebert"],
         "confidence": "claimed",
         "notes": (
             "Selected from a phosphotriester oligonucleotide library for "
@@ -180,15 +210,37 @@ def with_sequence(chemistry: str | None = None, min_confidence: str = "medium"):
 
 
 def g4_evidence():
-    """The three independent observations behind the G-quadruplex prior."""
-    return [
-        {"aptamer": a["name"], "chemistry": a["chemistry"],
-         "evidence": a["fold"], "confidence": a["confidence"],
-         "source": a["sources"][0]}
-        for a in KNOWN_APTAMERS
-        if a["fold"] and ("G4" in a["fold"] or "G-quad" in a["fold"]
-                          or "G-quartet" in a["fold"])
-    ]
+    """Observations behind the G-quadruplex prior, WITH their independence.
+
+    Reported as a dict rather than a list because the count alone overstates
+    the case: two of the three G4 observations come from the same laboratory,
+    so "three observations" is not "three independent selections".
+    """
+    # Match on an explicit flag, never on the prose of `fold`: F3B's fold reads
+    # "stem-loop (no G4 reported)", so a substring test for "G4" counted a
+    # NEGATIVE observation as supporting evidence.
+    hits = [a for a in KNOWN_APTAMERS if a.get("forms_g4") is True]
+    # Count canonical group ids, not the free-text lab names: those differ by a
+    # trailing "+ LVMH Recherche" and would be tallied as two groups.
+    labs = {a["lab_group"] for a in hits if a["lab_group"]}
+    return {
+        "observations": [
+            {"aptamer": a["name"], "chemistry": a["chemistry"],
+             "evidence": a["fold"], "confidence": a["confidence"],
+             "lab": a["lab"], "source": a["sources"][0]}
+            for a in hits
+        ],
+        "n_observations": len(hits),
+        "n_distinct_labs": len(labs) + sum(1 for a in hits if not a["lab"]),
+        "caveat": (
+            "Toulme/Dausse (INSERM Bordeaux) authored or invented both 8F14A "
+            "and the LVMH series, so those two share a lab and plausibly a "
+            "library and protocol. The only G4 observation outside that group "
+            "is MMP9-DNA-30, and that one is a computational prediction "
+            "(G4Hunter), not an experimental structure. Shared protocol bias "
+            "remains a live alternative explanation for the convergence."
+        ),
+    }
 
 
 if __name__ == "__main__":
