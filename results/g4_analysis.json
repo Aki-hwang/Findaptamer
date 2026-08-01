@@ -1,0 +1,171 @@
+[
+  {
+    "name": "F3B",
+    "chemistry": "RNA (2'-F pyrimidine)",
+    "length": 36,
+    "sequence": "UGCCCUGCCCUCACCCGUUAGCCUGAGCGCCCCGCA",
+    "g4hunter_whole": -1.167,
+    "g4hunter_windowed_max": -1.28,
+    "g4hunter_window": [
+      8,
+      33
+    ],
+    "motif_3tetrad": [],
+    "motif_2tetrad": [],
+    "predicted_g4": true,
+    "vs_reference_g4_aptamers": {
+      "TBA / HD1 / ARC-183": {
+        "score": 9,
+        "aligned_len": 9,
+        "identity": 0.667,
+        "identity_over_ref": 0.4,
+        "query": "GTTAGCCTG",
+        "subject": "GTTGGTGTG",
+        "null": {
+          "observed_score": 9,
+          "n_shuffles": 2000,
+          "n_ge_observed": 673,
+          "p_value": 0.3368
+        }
+      },
+      "AS1411 / AGRO100": {
+        "score": 7,
+        "aligned_len": 13,
+        "identity": 0.615,
+        "identity_over_ref": 0.308,
+        "query": "GTTAGCCTGAGCG",
+        "subject": "GTT-G--TG-GTG",
+        "null": {
+          "observed_score": 7,
+          "n_shuffles": 2000,
+          "n_ge_observed": 1632,
+          "p_value": 0.8161
+        }
+      }
+    }
+  },
+  {
+    "name": "MMP9-DNA-30",
+    "chemistry": "DNA",
+    "length": 30,
+    "sequence": "TCGTATGGCACGGGGTTGGTGTTGGGTTGG",
+    "g4hunter_whole": 1.2,
+    "g4hunter_windowed_max": 1.44,
+    "g4hunter_window": [
+      5,
+      30
+    ],
+    "motif_3tetrad": [],
+    "motif_2tetrad": [
+      "GGCACGGGGTTGGTGTTGGG",
+      "GGGGTTGGTGTTGGGTTGG",
+      "GGGTTGGTGTTGGGTTGG",
+      "GGTTGGTGTTGGGTTGG"
+    ],
+    "predicted_g4": true,
+    "vs_reference_g4_aptamers": {
+      "TBA / HD1 / ARC-183": {
+        "score": 26,
+        "aligned_len": 17,
+        "identity": 0.882,
+        "identity_over_ref": 1.0,
+        "query": "GGTTGGTGTTGGGTTGG",
+        "subject": "GGTTGGTG-T-GGTTGG",
+        "null": {
+          "observed_score": 26,
+          "n_shuffles": 2000,
+          "n_ge_observed": 6,
+          "p_value": 0.0035
+        }
+      },
+      "AS1411 / AGRO100": {
+        "score": 25,
+        "aligned_len": 26,
+        "identity": 0.692,
+        "identity_over_ref": 0.692,
+        "query": "TGGCACGGGGTTGGTGTTGG-GTTGG",
+        "subject": "TGG-TGGTGGTT-GTGGTGGTGGTGG",
+        "null": {
+          "observed_score": 25,
+          "n_shuffles": 2000,
+          "n_ge_observed": 1429,
+          "p_value": 0.7146
+        }
+      }
+    }
+  },
+  {
+    "name": "[ref] TBA / HD1 / ARC-183",
+    "chemistry": "reference, target=thrombin exosite I",
+    "length": 15,
+    "sequence": "GGTTGGTGTGGTTGG",
+    "g4hunter_whole": 1.133,
+    "g4hunter_windowed_max": 1.133,
+    "g4hunter_window": [
+      0,
+      15
+    ],
+    "motif_3tetrad": [],
+    "motif_2tetrad": [
+      "GGTTGGTGTGGTTGG"
+    ],
+    "predicted_g4": true,
+    "vs_reference_g4_aptamers": {
+      "TBA / HD1 / ARC-183": {
+        "score": 30,
+        "aligned_len": 15,
+        "identity": 1.0,
+        "identity_over_ref": 1.0,
+        "query": "GGTTGGTGTGGTTGG",
+        "subject": "GGTTGGTGTGGTTGG"
+      },
+      "AS1411 / AGRO100": {
+        "score": 22,
+        "aligned_len": 15,
+        "identity": 0.867,
+        "identity_over_ref": 0.5,
+        "query": "GGTTGGT-GTGGTTG",
+        "subject": "GG-TGGTGGTGGTTG"
+      }
+    }
+  },
+  {
+    "name": "[ref] AS1411 / AGRO100",
+    "chemistry": "reference, target=nucleolin",
+    "length": 26,
+    "sequence": "GGTGGTGGTGGTTGTGGTGGTGGTGG",
+    "g4hunter_whole": 1.269,
+    "g4hunter_windowed_max": 1.24,
+    "g4hunter_window": [
+      0,
+      25
+    ],
+    "motif_3tetrad": [],
+    "motif_2tetrad": [
+      "GGTGGTGGTGG",
+      "GGTGGTGGTGGTTGTGGTGGTGGTGG",
+      "GGTGGTGGTTGTGGTGGTGGTGG",
+      "GGTGGTTGTGGTGGTGGTGG",
+      "GGTTGTGGTGGTGGTGG"
+    ],
+    "predicted_g4": true,
+    "vs_reference_g4_aptamers": {
+      "TBA / HD1 / ARC-183": {
+        "score": 22,
+        "aligned_len": 15,
+        "identity": 0.867,
+        "identity_over_ref": 0.867,
+        "query": "GG-TGGTGGTGGTTG",
+        "subject": "GGTTGGT-GTGGTTG"
+      },
+      "AS1411 / AGRO100": {
+        "score": 52,
+        "aligned_len": 26,
+        "identity": 1.0,
+        "identity_over_ref": 1.0,
+        "query": "GGTGGTGGTGGTTGTGGTGGTGGTGG",
+        "subject": "GGTGGTGGTGGTTGTGGTGGTGGTGG"
+      }
+    }
+  }
+]
