@@ -1,0 +1,25 @@
+{
+  "n_generated": 5853,
+  "n_passed": 4424,
+  "n_emitted": 1000,
+  "rejections": {
+    "homopolymer run > 4": 21,
+    "too close to TBA": 1083,
+    "competing Watson-Crick hairpin": 325
+  },
+  "params": {
+    "n": 1000,
+    "tetrads": 2,
+    "flank5": 0,
+    "flank3": 0,
+    "oversample": 6,
+    "g4_min": 0.2,
+    "mfe_floor": -3.0,
+    "tba_p_min": 0.05,
+    "shuffles": 300,
+    "seed": 0,
+    "out": "results/g4_library_v1.csv"
+  },
+  "provenance": "G4 prior from three independent MMP-9 selections; see docs/07_g4_discovery_ko.md",
+  "what_this_is_not": "This library is NOT a binding prediction. No filter here estimates affinity for MMP-9. It is a search-space reduction for one wet SELEX round."
+}

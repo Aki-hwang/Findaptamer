@@ -37,7 +37,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from target.mmp9 import BENCHMARK_APTAMERS  # noqa: E402
+from target.mmp9_aptamers import KNOWN_APTAMERS  # noqa: E402
 from oracle.interface import StructureProxyOracle  # noqa: E402
 
 
@@ -52,8 +52,17 @@ def shuffled(seq: str, rng: random.Random) -> str:
     return "".join(chars)
 
 
-def random_dna(n: int, rng: random.Random) -> str:
-    return "".join(rng.choice("AGCT") for _ in range(n))
+def random_seq(n: int, rng: random.Random, chem: str = "dna") -> str:
+    """Random sequence in the POSITIVE's alphabet.
+
+    This used to hard-code "AGCT" regardless of chemistry, so an RNA positive
+    was compared against negatives that were declared RNA but contained T and
+    never U. That makes the negatives a different molecule class from the
+    positive -- exactly the confound the matched-chemistry design exists to
+    remove.
+    """
+    return "".join(rng.choice("AGCU" if chem == "rna" else "AGCT")
+                   for _ in range(n))
 
 
 def auroc(pos, neg) -> float:
@@ -103,6 +112,9 @@ def main():
                     help="predictions per sequence; >1 estimates the "
                          "oracle run-to-run spread")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--anchor", default=None,
+                    help="which positive defines the negatives' length and "
+                         "chemistry (default: the highest-confidence one)")
     ap.add_argument("--out", default="results/calibration.json")
     args = ap.parse_args()
 
@@ -115,23 +127,41 @@ def main():
     # molecule with a different (A-form) fold, so a CORRECT oracle could rank it
     # below random DNA. Declare the real entity type instead.
     positives = []
-    for apt in BENCHMARK_APTAMERS:
+    for apt in KNOWN_APTAMERS:
         if not apt.get("sequence"):
             continue
-        chem = "rna" if "RNA" in apt["type"].upper() else "dna"
-        positives.append((apt["name"], apt["sequence"], chem))
+        chem = "rna" if "RNA" in apt["chemistry"].upper() else "dna"
+        positives.append((apt["name"], apt["sequence"], chem,
+                          apt["confidence"]))
     if not positives:
         raise SystemExit("no benchmark aptamer sequences available")
 
+    # The anchor positive defines the negatives' length and chemistry, so which
+    # one anchors matters. Default to the highest-confidence entry, which is
+    # MMP9-DNA-30: unmodified DNA, so unlike F3B (2'-F pyrimidine / 2'-OMe
+    # purine RNA) there is no modification confound between what we score and
+    # what was measured in the lab. Anchoring on F3B conflated "cannot predict
+    # binding" with "cannot model a modified RNA" (docs/06).
+    if args.anchor:
+        match = [p for p in positives if p[0] == args.anchor]
+        if not match:
+            raise SystemExit(f"--anchor {args.anchor} not among "
+                             f"{[p[0] for p in positives]}")
+        anchor = match[0]
+    else:
+        rank = {"high": 2, "medium": 1, "claimed": 0}
+        anchor = max(positives, key=lambda p: rank[p[3]])
+    positives = [(n, s, c) for n, s, c, _ in positives]
+
     # --- negatives: matched-length shuffles, randoms, poly-A ----------------
-    # Negatives share the positive's chemistry and length so the comparison is
+    # Negatives share the anchor's chemistry and length so the comparison is
     # like-for-like (an RNA positive vs DNA negatives would test chemistry, not
     # binding).
-    p_name, p_seq, p_chem = positives[0]
+    p_name, p_seq, p_chem = anchor[0], anchor[1], anchor[2]
     L = len(p_seq)
     negatives = [(f"shuffle{i}", shuffled(p_seq, rng))
                  for i in range(args.n_negatives // 2)]
-    negatives += [(f"random{i}", random_dna(L, rng))
+    negatives += [(f"random{i}", random_seq(L, rng, p_chem))
                   for i in range(args.n_negatives - len(negatives) - 1)]
     negatives.append(("polyA", "A" * L))
 
