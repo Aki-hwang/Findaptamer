@@ -23,9 +23,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from oracle.boltz2 import Boltz2Config, _write_yaml, msa_cache_base  # noqa: E402
 
-# Boltz accepts .a3m or .csv alignments; it writes them under the run directory.
-MSA_PATTERNS = ("*.a3m", "msa/*.csv", "**/msa/*.csv", "**/*.a3m")
-
+# Boltz's YAML `msa:` field takes an .a3m or .csv alignment. Which of those it
+# leaves on disk (and where) varies by version, so search the whole run tree by
+# extension rather than guessing a fixed layout.
+MSA_SUFFIXES = (".a3m", ".csv")
 
 
 def read_fasta(path: str) -> str:
@@ -33,15 +34,31 @@ def read_fasta(path: str) -> str:
                    if l and not l.startswith(">"))
 
 
-def find_msa(root: Path):
-    """Locate the alignment Boltz generated for the protein chain."""
-    seen = []
-    for pat in MSA_PATTERNS:
-        for hit in sorted(root.glob(pat)):
-            if hit.is_file() and hit.stat().st_size > 0:
-                seen.append(hit)
-    # prefer the largest file — the protein MSA, not a stub for the DNA chain
-    return max(seen, key=lambda p: p.stat().st_size) if seen else None
+def find_msa(root: Path, verbose: bool = True):
+    """Locate the alignment Boltz generated for the protein chain.
+
+    Returns the largest reusable alignment found, or None. On failure it lists
+    what IS in the tree, because the alternative — silently falling back to the
+    MSA server for every prediction — turns a 20-minute calibration into hours.
+    """
+    seen = [p for p in root.rglob("*")
+            if p.is_file() and p.suffix.lower() in MSA_SUFFIXES
+            and p.stat().st_size > 0]
+    if seen:
+        best = max(seen, key=lambda p: p.stat().st_size)
+        if verbose:
+            print(f"  candidate alignments: "
+                  + ", ".join(f"{p.relative_to(root)}({p.stat().st_size}B)"
+                              for p in sorted(seen)[:8]))
+        return best
+    if verbose:
+        files = sorted(p for p in root.rglob("*") if p.is_file())
+        print(f"  no .a3m/.csv alignment under {root}. Tree ({len(files)} files):")
+        for f in files[:40]:
+            print(f"    {f.relative_to(root)}  ({f.stat().st_size}B)")
+        if len(files) > 40:
+            print(f"    ... and {len(files) - 40} more")
+    return None
 
 
 def main():
@@ -74,16 +91,23 @@ def main():
     print("  " + " ".join(cmd))
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
-        print(proc.stdout[-3000:])
-        raise SystemExit(f"boltz failed:\n{proc.stderr[-3000:]}")
+        print("--- boltz stdout (tail) ---")
+        print(proc.stdout[-2000:])
+        print("--- boltz stderr (tail) ---")
+        print(proc.stderr[-3000:])
+        print(f"  ! keeping {work} for inspection (not deleted)")
+        raise SystemExit(f"boltz predict failed with exit code {proc.returncode}")
+    print("  seeding prediction finished; locating the alignment ...", flush=True)
 
     msa = find_msa(work)
     if msa is None:
+        print(f"\n  ! keeping {work} for inspection (not deleted)")
         raise SystemExit(
             f"Could not find a generated MSA under {work}.\n"
-            "Inspect that directory and pass the alignment manually via\n"
-            "Boltz2Config(precomputed_msa=...). Falling back to --use_msa_server\n"
-            "still works, just slower.")
+            "The tree listing above shows what boltz actually wrote; point\n"
+            "Boltz2Config(precomputed_msa=...) at the right file, or re-run with\n"
+            "--cache to place it manually. Falling back to --use_msa_server still\n"
+            "works but re-queries the server for EVERY prediction.")
 
     base = args.cache or str(msa_cache_base(receptor))
     dest = Path(f"{base}{msa.suffix}")

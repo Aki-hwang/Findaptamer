@@ -15,6 +15,9 @@
 #   TIME       D-HH:MM:SS          (default 1-00:00:00 = 1 day; cluster max 7-00:00:00)
 #   MODE       interactive | batch (default interactive)
 #   STAGE      calibrate | pilot | both   (default both)
+#   SEEDS      predictions per sequence in calibration (default 3;
+#              use 1 for a fast first check — 13 calls instead of 39)
+#   NNEG       negative controls in calibration (default 12)
 #
 # Cluster policy notes honored here:
 #   * installs/downloads happen on the login node (scripts/setup_login.sh), so the
@@ -31,6 +34,8 @@ GPU_N="${GPU_N:-1}"   # the pipeline scores serially; a 2nd GPU would sit idle
 TIME="${TIME:-1-00:00:00}"
 MODE="${MODE:-interactive}"
 STAGE="${STAGE:-both}"
+SEEDS="${SEEDS:-3}"      # predictions per sequence in calibration
+NNEG="${NNEG:-12}"       # negative controls in calibration
 JOB="${JOB:-mmp9apt}"
 
 case "$EMAIL" in
@@ -92,7 +97,8 @@ fi
 
 if [ "$STAGE" = "calibrate" ] || [ "$STAGE" = "both" ]; then
   echo; echo "=== oracle calibration (gate) ==="
-  python src/oracle/calibrate.py --receptor "$RECEPTOR" --out results/calibration.json
+  python src/oracle/calibrate.py --receptor "$RECEPTOR" \
+    --seeds $SEEDS --n-negatives $NNEG --out results/calibration.json
 fi
 if [ "$STAGE" = "pilot" ] || [ "$STAGE" = "both" ]; then
   echo; echo "=== closed-loop design ==="
