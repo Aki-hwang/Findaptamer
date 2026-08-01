@@ -1,0 +1,99 @@
+{
+  "construct": "5'-ATTCCAACCTGCAAGAACAA-(N)40-TACGACGTCTCGCTTAGTAA-3'",
+  "total_length": 80,
+  "random_length": 40,
+  "fwd_primer": {
+    "sequence": "ATTCCAACCTGCAAGAACAA",
+    "in_library": "ATTCCAACCTGCAAGAACAA",
+    "tm": 59.0,
+    "gc": 0.4,
+    "hairpin_dG": 0.0,
+    "g4hunter": -0.4,
+    "max_G_run": 1,
+    "motif_alone": 0,
+    "motif_at_junction": 0
+  },
+  "rev_primer": {
+    "sequence": "TTACTAAGCGAGACGTCGTA",
+    "in_library": "TACGACGTCTCGCTTAGTAA",
+    "tm": 59.0,
+    "gc": 0.45,
+    "hairpin_dG": -1.6,
+    "g4hunter": -0.05,
+    "max_G_run": 1,
+    "motif_alone": 0,
+    "motif_at_junction": 0
+  },
+  "constant_5prime": "ATTCCAACCTGCAAGAACAA",
+  "constant_3prime": "TACGACGTCTCGCTTAGTAA",
+  "tm_difference": 0.0,
+  "cross_dimer_bp": 0,
+  "design_notes": {
+    "g4_dead_primers": "Primers are required to have no GG run, G4Hunter <= 0, and no quadruplex motif even when flanked by poly-G. The MMP-9 aptamers with a known fold are all G4 (docs/07), so a G-rich constant region would compete for the target in every library member and enrich without carrying sequence information.",
+    "tm_model": "SantaLucia 1998 unified nearest-neighbour, 250 nM primer, 50 mM Na+, 1.5 mM Mg2+ as monovalent equivalent. Re-check against your polymerase's buffer before ordering.",
+    "ssDNA_generation": "PCR gives duplex; SELEX needs the sense (aptamer) strand alone. Recommended: order the REVERSE primer 5'-phosphorylated and treat the PCR product with lambda exonuclease, which digests the 5'-phosphorylated strand -- that is the antisense strand, since it is the one primed by REV -- and leaves FWD+N40+revcomp(REV) intact. This avoids the streptavidin carryover and NaOH-denaturation losses of the biotin route. The forward primer needs no modification. If you prefer biotin-streptavidin instead, biotinylate REV, not FWD.",
+    "counter_selection": "SAE0077 is HEK293-expressed full-length MMP-9, so the FnII gelatin-binding exosite is present. ssDNA binds FnII and ACTIVATES MMP-9 (Shimada 2018), and MMP-2 carries the same FnII domains -- so an FnII binder would likely cross-react with MMP-2 and be useless as an MMP-9-specific diagnostic. Counter-select against MMP-2 and against gelatin/collagen."
+  },
+  "example_members": [
+    {
+      "id": "N40_0000",
+      "sequence": "ATTCCAACCTGCAAGAACAACCGTACCACGCTAGCTCGCCATTGGTTGAACTCACCGGACTACGACGTCTCGCTTAGTAA",
+      "random_region": "CCGTACCACGCTAGCTCGCCATTGGTTGAACTCACCGGAC"
+    },
+    {
+      "id": "N40_0001",
+      "sequence": "ATTCCAACCTGCAAGAACAACAGATTTGTGTGGAGAAGCGTGAAATATACAAAGTATGCATACGACGTCTCGCTTAGTAA",
+      "random_region": "CAGATTTGTGTGGAGAAGCGTGAAATATACAAAGTATGCA"
+    },
+    {
+      "id": "N40_0002",
+      "sequence": "ATTCCAACCTGCAAGAACAACTTCTCGCCTCAAAAGTGCACTACGCTACAAGGAGCAATTTACGACGTCTCGCTTAGTAA",
+      "random_region": "CTTCTCGCCTCAAAAGTGCACTACGCTACAAGGAGCAATT"
+    },
+    {
+      "id": "N40_0003",
+      "sequence": "ATTCCAACCTGCAAGAACAACAATCTTATCGGGATGGAGAGAATGCAAGGTTCGTTCAGCTACGACGTCTCGCTTAGTAA",
+      "random_region": "CAATCTTATCGGGATGGAGAGAATGCAAGGTTCGTTCAGC"
+    },
+    {
+      "id": "N40_0004",
+      "sequence": "ATTCCAACCTGCAAGAACAAGTAGAATAACGCGAAGCAGTATTACACAAGTGCGAACTTGTACGACGTCTCGCTTAGTAA",
+      "random_region": "GTAGAATAACGCGAAGCAGTATTACACAAGTGCGAACTTG"
+    },
+    {
+      "id": "N40_0005",
+      "sequence": "ATTCCAACCTGCAAGAACAAATGAAGATTACTAGCTACGTCGACTACCGATGATGAAAAGTACGACGTCTCGCTTAGTAA",
+      "random_region": "ATGAAGATTACTAGCTACGTCGACTACCGATGATGAAAAG"
+    },
+    {
+      "id": "N40_0006",
+      "sequence": "ATTCCAACCTGCAAGAACAACAGCCGGAGTCCCTTCATATAGGAGAGTATGGATTTAAGTTACGACGTCTCGCTTAGTAA",
+      "random_region": "CAGCCGGAGTCCCTTCATATAGGAGAGTATGGATTTAAGT"
+    },
+    {
+      "id": "N40_0007",
+      "sequence": "ATTCCAACCTGCAAGAACAAGAACATTGTCACGGAGATCTGGTACTGAAGTGGGATGACGTACGACGTCTCGCTTAGTAA",
+      "random_region": "GAACATTGTCACGGAGATCTGGTACTGAAGTGGGATGACG"
+    },
+    {
+      "id": "N40_0008",
+      "sequence": "ATTCCAACCTGCAAGAACAAGAGGTTATTGCCCGAGGACGACCACAACACGAACCACGGCTACGACGTCTCGCTTAGTAA",
+      "random_region": "GAGGTTATTGCCCGAGGACGACCACAACACGAACCACGGC"
+    },
+    {
+      "id": "N40_0009",
+      "sequence": "ATTCCAACCTGCAAGAACAAAGCGTTCATGCAACCCGTGTCCCCACGGTACTCTAATTGGTACGACGTCTCGCTTAGTAA",
+      "random_region": "AGCGTTCATGCAACCCGTGTCCCCACGGTACTCTAATTGG"
+    },
+    {
+      "id": "N40_0010",
+      "sequence": "ATTCCAACCTGCAAGAACAACTGCTGGTCTGGAGTCCGAAATCCGCCACCGGATTGACGGTACGACGTCTCGCTTAGTAA",
+      "random_region": "CTGCTGGTCTGGAGTCCGAAATCCGCCACCGGATTGACGG"
+    },
+    {
+      "id": "N40_0011",
+      "sequence": "ATTCCAACCTGCAAGAACAAATTGGCGCCACGAGCCCCGTTGGCATCATCTATAACCGGATACGACGTCTCGCTTAGTAA",
+      "random_region": "ATTGGCGCCACGAGCCCCGTTGGCATCATCTATAACCGGA"
+    }
+  ]
+}
