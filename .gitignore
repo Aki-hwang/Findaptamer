@@ -19,3 +19,6 @@ AiDTA/
 !results/*.md
 !results/*.json
 !results/*.csv
+
+# manuscript deliverables are tracked
+!docs/manuscript/*.docx
