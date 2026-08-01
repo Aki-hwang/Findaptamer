@@ -115,6 +115,11 @@ def main():
     ap.add_argument("--anchor", default=None,
                     help="which positive defines the negatives' length and "
                          "chemistry (default: the highest-confidence one)")
+    ap.add_argument("--only-anchor", action="store_true",
+                    help="score ONLY the anchor positive. Negatives can match "
+                         "just one chemistry/length, so with mixed-chemistry "
+                         "positives the non-anchor one is judged against the "
+                         "wrong molecule class and pollutes AUROC")
     ap.add_argument("--out", default="results/calibration.json")
     args = ap.parse_args()
 
@@ -151,6 +156,14 @@ def main():
     else:
         rank = {"high": 2, "medium": 1, "claimed": 0}
         anchor = max(positives, key=lambda p: rank[p[3]])
+    # Negatives can only be matched to ONE positive's chemistry and length.
+    # With F3B (RNA, 36 nt) and MMP9-DNA-30 (DNA, 30 nt) both in play, whichever
+    # is not the anchor gets compared against negatives of the wrong molecule
+    # class -- and AUROC is the gate metric, so that contaminates the verdict
+    # rather than merely adding noise. --only-anchor runs the clean
+    # single-positive test.
+    if args.only_anchor:
+        positives = [anchor]
     positives = [(n, s, c) for n, s, c, _ in positives]
 
     # --- negatives: matched-length shuffles, randoms, poly-A ----------------

@@ -27,6 +27,11 @@
 #   ANCHOR     which positive anchors calibration (default: highest
 #              confidence = MMP9-DNA-30, unmodified DNA). ANCHOR=F3B
 #              reproduces the original modified-RNA run.
+#   ONLY_ANCHOR=1  score ONLY the anchor. Negatives can match one
+#              chemistry/length, so with F3B (RNA 36nt) and
+#              MMP9-DNA-30 (DNA 30nt) both scored, the non-anchor is
+#              judged against the wrong molecule class and pollutes
+#              AUROC — the gate metric. Use this for the clean test.
 #
 # Cluster policy notes honored here:
 #   * installs/downloads happen on the login node (scripts/setup_login.sh), so the
@@ -116,7 +121,8 @@ if [ "$STAGE" = "calibrate" ] || [ "$STAGE" = "both" ]; then
   # original run.
   python src/oracle/calibrate.py --receptor "$RECEPTOR" \
     --seeds $SEEDS --n-negatives $NNEG \
-    ${ANCHOR:+--anchor "$ANCHOR"} --out results/calibration.json
+    ${ANCHOR:+--anchor "$ANCHOR"} ${ONLY_ANCHOR:+--only-anchor} \
+    --out results/calibration.json
 fi
 if [ "$STAGE" = "pose" ]; then
   echo; echo "=== pose-reproducibility calibration ==="
