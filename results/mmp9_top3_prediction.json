@@ -1,0 +1,53 @@
+{
+  "candidates": [
+    {
+      "sequence": "ATAATATAATTGGTTAGGAAAGGTTTGGTATAATTTTTAT",
+      "length": 40,
+      "g4hunter": 0.64,
+      "motif_2tetrad": 1,
+      "motif_3tetrad": 0,
+      "competing_mfe": 0.0,
+      "tba_identity": 0.706,
+      "tba_p": 0.0579,
+      "vs_MMP9_DNA_30_identity": 0.636,
+      "arm": "A_chair_G4",
+      "rationale": "Two-tetrad chair, the topology of MMP9-DNA-30's core -- the only unmodified-DNA MMP-9 binder reused unchanged by three independent groups. Novel with respect to TBA."
+    },
+    {
+      "sequence": "TATTTAAATAATGGGAGGGTGGGTGGGTAAAAATATAATA",
+      "length": 40,
+      "g4hunter": 1.44,
+      "motif_2tetrad": 2,
+      "motif_3tetrad": 1,
+      "competing_mfe": 0.0,
+      "tba_identity": 0.733,
+      "tba_p": 0.0739,
+      "vs_MMP9_DNA_30_identity": 0.739,
+      "arm": "B_parallel_G4",
+      "rationale": "Three-tetrad parallel propeller with short loops -- the class the LVMH MMP-9 inhibitor patent claims, and the class our leave-one-out-validated predictor recovered T30695 from at rank 1 of 355,914."
+    },
+    {
+      "sequence": "CATACACATTGCGACTGTATAGTCCGACCATCTTCTCCAG",
+      "length": 40,
+      "g4hunter": -0.48,
+      "motif_2tetrad": 0,
+      "motif_3tetrad": 0,
+      "competing_mfe": -1.6,
+      "tba_identity": 0.571,
+      "tba_p": 0.4565,
+      "vs_MMP9_DNA_30_identity": 0.6,
+      "arm": "C_ml_mcts",
+      "rationale": "Apta-MCTS, pretrained RF scorer, full-length MMP-9 (707 aa) as target and VEGF as counter-target. INCLUDED WITH A WARNING: we measured this scorer at AUROC 0.4927 and 0.5055 on real aptamer-protein pairs, i.e. chance, so this arm is here for the comparison the request asked for, not because it is trusted."
+    }
+  ],
+  "target": "human MMP-9, full length (UniProt P14780, 707 aa) -- matched to SAE0077, the HEK293-expressed full-length protein used in the user's SELEX",
+  "no_affinity_predicted": "No candidate carries a predicted Kd or affinity score. Four measured failures (co-folding ipTM and pose, sequence-ML protein-grouped AUROC 0.210, Apta-MCTS scorers at 0.4927/0.5055) mean any affinity number we printed would be fabricated.",
+  "grading_rule": {
+    "declared_before_seeing_the_selex_data": true,
+    "hit": "a candidate aligns to any enriched SELEX sequence at >=70% identity over >=20 nt",
+    "strong_hit": ">=80% identity over >=30 nt to a top-10 enriched sequence",
+    "topology_hit": "the SELEX hits are G4-forming (G4Hunter > 0 with a quadruplex motif) at a rate above a dinucleotide-shuffled null -- this scores the PRIOR even if no individual sequence matches",
+    "null_expectation": "for 40-mers over 4^40 ~ 10^24, exact or near-exact sequence agreement by chance is nil; the topology_hit is the outcome that carries real information",
+    "what_would_falsify_the_prior": "SELEX hits with no G4 enrichment over the shuffled null. In that case docs/07's G4 prior and the focused library built on it are withdrawn."
+  }
+}
