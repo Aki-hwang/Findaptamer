@@ -95,18 +95,26 @@ def build_core(rng, tetrads: int, loops: tuple[int, int, int]) -> dict:
 
 
 def pad_to(seq: str, n: int, rng) -> str:
-    """Extend to n nt with A/T-only flanks.
+    """Extend to n nt with short G-free flanks.
 
-    Flanks are G-free so they cannot donate a tetrad column and shift the fold,
-    and C-free so they cannot pair with the G-tracts and sequester the
-    quadruplex. That leaves A and T.
+    Flanks are kept SHORT on purpose. The first version of this design padded a
+    15-nt G4 core out to 40 nt with 25 nt of A/T filler, which is not an aptamer
+    -- it is a small motif floating in junk. In a real selection the loops are
+    the recognition surface (in TBA it is the TT loops, not the G-tracts, that
+    contact thrombin), so a 40-mer should spend its length on loops rather than
+    on padding. build_core now does that and this only tops up the remainder.
+
+    Flank composition: no G, so a flank cannot donate a tetrad column and shift
+    the register; A/T/C only, and C is capped by the caller's competing-fold
+    check rather than banned, so the flanks are not a monotonous A/T tract.
     """
     need = n - len(seq)
     if need <= 0:
         return seq[:n]
     left = need // 2
-    f5 = "".join(rng.choice("AT") for _ in range(left))
-    f3 = "".join(rng.choice("AT") for _ in range(need - left))
+    alpha = "ACT"
+    f5 = "".join(rng.choice(alpha) for _ in range(left))
+    f3 = "".join(rng.choice(alpha) for _ in range(need - left))
     return f5 + seq + f3
 
 
@@ -158,8 +166,13 @@ def main():
     rng = random.Random(args.seed)
     cands = []
 
+    # Loop lengths are chosen so the G4 core FILLS most of the 40 nt. Two
+    # tetrads give 8 G, so loops of 6-7 nt each put the core at 26-29 nt and
+    # leave only ~11 nt of flank instead of the 25 nt of filler the first
+    # version produced. Long loops are also the point biologically: they are
+    # the surface that contacts protein, and a 40-mer can afford them.
     print("=== arm A: two-tetrad chair G4 (MMP9-DNA-30 topology) ===")
-    a = generate_arm(rng, 2, [(2, 3), (3, 4, 5), (2, 3)])
+    a = generate_arm(rng, 2, [(6, 7), (6, 7), (6, 7)])
     if a:
         cands.append(("A_chair_G4", a[1],
                       "Two-tetrad chair, the topology of MMP9-DNA-30's core -- "
@@ -168,7 +181,8 @@ def main():
         print(f"  {a[1]}  G4Hunter {a[0]:+.2f}")
 
     print("\n=== arm B: parallel (GGGT)n G4 (LVMH patent class) ===")
-    b = generate_arm(rng, 3, [(1, 2), (1, 2), (1, 2)])
+    # Three tetrads give 12 G; loops of 6-7 put the core at 30-33 nt.
+    b = generate_arm(rng, 3, [(6, 7), (6, 7), (6, 7)])
     if b:
         cands.append(("B_parallel_G4", b[1],
                       "Three-tetrad parallel propeller with short loops -- the "
