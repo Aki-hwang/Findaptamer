@@ -94,6 +94,18 @@ def build_oracle(kind: str, receptor: str | None, ligand_type: str = "dna",
     """Oracle for one chemistry (dna|rna) and optionally one seed."""
     if kind == "proxy":
         return StructureProxyOracle(), "structure_proxy (CPU dry-run — NOT a binding test)"
+    if kind == "chai1":
+        # An INDEPENDENT co-folding model. Boltz-2 failed this gate twice, but
+        # Boltz-2 is not AlphaFold3, so a second AF3-class model decides whether
+        # the failure belongs to co-folding as a method or to one implementation
+        # of it. Chai-1 is Apache-2.0 and fits a 48 GB card, unlike AF3 which
+        # needs weights-on-request and ~80 GB for nucleic acids.
+        from oracle.chai1 import Chai1Oracle, Chai1Config
+        if not receptor:
+            raise SystemExit("--receptor is required for the chai1 oracle")
+        return Chai1Oracle(Chai1Config(receptor_sequence=read_fasta(receptor),
+                                       ligand_type=ligand_type,
+                                       seed=seed or 0)), "chai1_interface"
     from oracle.boltz2 import Boltz2Oracle, Boltz2Config
     if not receptor:
         raise SystemExit("--receptor is required for the boltz2 oracle")
@@ -105,7 +117,8 @@ def build_oracle(kind: str, receptor: str | None, ligand_type: str = "dna",
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--oracle", choices=["boltz2", "proxy"], default="boltz2")
+    ap.add_argument("--oracle", choices=["boltz2", "chai1", "proxy"],
+                    default="boltz2")
     ap.add_argument("--receptor", help="FASTA from fetch_receptor.py")
     ap.add_argument("--n-negatives", type=int, default=12)
     ap.add_argument("--seeds", type=int, default=3,
@@ -124,8 +137,8 @@ def main():
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
-    kind = ("structure_proxy (CPU dry-run — NOT a binding test)"
-            if args.oracle == "proxy" else "boltz2_interface")
+    kind = {"proxy": "structure_proxy (CPU dry-run — NOT a binding test)",
+            "chai1": "chai1_interface"}.get(args.oracle, "boltz2_interface")
 
     # --- positives: known MMP9 binders, scored as the chemistry they ARE ------
     # F3B is a 2'-F pyrimidine RNA aptamer; co-folding it as B-DNA is a different

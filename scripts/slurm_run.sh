@@ -14,7 +14,13 @@
 #   GPU_N      1..4 (a40: 1..3)    (default 1 — scoring is serial)
 #   TIME       D-HH:MM:SS          (default 1-00:00:00 = 1 day; cluster max 7-00:00:00)
 #   MODE       interactive | batch (default interactive)
-#   STAGE      calibrate | pose | control | pilot | both  (default both)
+#   STAGE      calibrate | chai | pose | control | pilot | both (default both)
+#              chai = the SAME calibration gate run through Chai-1, an
+#              INDEPENDENT AF3-class co-folding model. Boltz-2 failed
+#              this gate twice; Chai-1 decides whether that belongs to
+#              co-folding as a method or to one implementation of it.
+#              (AlphaFold3 itself needs weights-on-request and ~80 GB
+#              for nucleic acids, so it will not fit a 48 GB card.)
 #              control = canonical protein-DNA positive control
 #              (Zif268/1AAY) — tells you whether a failed aptamer
 #              calibration means the model or the setup
@@ -123,6 +129,17 @@ if [ "$STAGE" = "calibrate" ] || [ "$STAGE" = "both" ]; then
     --seeds $SEEDS --n-negatives $NNEG \
     ${ANCHOR:+--anchor "$ANCHOR"} ${ONLY_ANCHOR:+--only-anchor} \
     --out results/calibration.json
+fi
+if [ "$STAGE" = "chai" ]; then
+  echo; echo "=== independent co-folding check: Chai-1 ==="
+  python -c "import chai_lab" 2>/dev/null || {
+    echo "   installing chai_lab (first run only) ..."
+    pip install -q chai_lab || { echo "!! chai_lab install failed"; exit 1; }
+  }
+  python src/oracle/calibrate.py --oracle chai1 --receptor "$RECEPTOR" \
+    --seeds $SEEDS --n-negatives $NNEG \
+    ${ANCHOR:+--anchor "$ANCHOR"} ${ONLY_ANCHOR:+--only-anchor} \
+    --out results/calibration_chai1.json
 fi
 if [ "$STAGE" = "pose" ]; then
   echo; echo "=== pose-reproducibility calibration ==="

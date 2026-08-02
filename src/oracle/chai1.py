@@ -34,15 +34,28 @@ class Chai1Config:
     num_trunk_recycles: int = 3
     num_diffn_timesteps: int = 200
     seed: int = 0
+    ligand_type: str = "dna"   # "dna" | "rna" -- must match the real molecule
     device: str = "cuda:0"
     use_esm_embeddings: bool = True
 
 
-def write_chai_fasta(path: Path, receptor: str, aptamer: str):
-    """Chai-1 takes a FASTA whose headers declare the entity type."""
+def write_chai_fasta(path: Path, receptor: str, aptamer: str,
+                     ligand_type: str = "dna"):
+    """Chai-1 takes a FASTA whose headers declare the entity type.
+
+    The entity type is a parameter, not a constant. Hard-coding "dna" meant an
+    RNA aptamer such as F3B was silently folded as B-DNA -- a different molecule
+    with a different helical form -- and the resulting score would have been
+    read as a binding failure rather than a modelling error. This is the same
+    defect that made the first Boltz-2 calibration uninterpretable (docs/06).
+    """
+    if ligand_type not in ("dna", "rna"):
+        raise ValueError(f"ligand_type must be dna or rna, got {ligand_type}")
+    seq = aptamer.replace("&", "").upper()
+    seq = seq.replace("T", "U") if ligand_type == "rna" else seq.replace("U", "T")
     path.write_text(
         f">protein|name=receptor\n{receptor}\n"
-        f">dna|name=aptamer\n{aptamer.replace('&', '')}\n"
+        f">{ligand_type}|name=aptamer\n{seq}\n"
     )
 
 
@@ -66,7 +79,8 @@ class Chai1Oracle(Oracle):
             tempfile.mkdtemp(prefix="chai_"))
         root.mkdir(parents=True, exist_ok=True)
         fasta = root / "input.fasta"
-        write_chai_fasta(fasta, cfg.receptor_sequence, sequence)
+        write_chai_fasta(fasta, cfg.receptor_sequence, sequence,
+                         cfg.ligand_type)
         # chai_lab asserts its output_dir is empty (and must create it itself), so
         # the input file cannot live there. Point it at a fresh subdirectory.
         out = root / "chai_out"
